@@ -55,7 +55,9 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
 <link rel='stylesheet' id='buttons-css' href='../wp-includes/css/buttons.min.css' media='all' />
 
 <link rel="preload" href="../nxm/fonts/oxygen-300-latin.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="../nxm/nxm.css?v=23">
+<link rel="preload" href="../nxm/fonts/oxygen-400-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../nxm/fonts/oxygen-700-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="../nxm/nxm.css?v=34">
 <meta name="theme-color" content="#141414">
 </head>
 <body class="nxm-hero wp-singular page-template page-template-page-full-width-image page-template-page-full-width-image-php page page-id-96 wp-theme-erdel">
@@ -92,7 +94,7 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
         <main id="main" class="main-content">
                         <header class="main-header featured-full-width-img  bg-dark text-light mb-3" style="background-image: url('../wp-content/uploads/2022/07/header.jpg')">
                 <div class="container h-100 d-flex align-items-end pb-3 ms-auto p-2 bd-highlight">
-                        <h1>Jetzt Kontakt&nbsp;aufnehmen</h1>
+                        <h1 style="--seg:8.721">Jetzt Kontakt&nbsp;aufnehmen</h1>
                     <!--<h1 class="main-title text-right">Kontakt</h1>-->
                   
                  
@@ -146,7 +148,7 @@ img:is([sizes=auto i],[sizes^="auto," i]){contain-intrinsic-size:3000px 1500px}
       </div>
     </aside>
     <div class="x-formcard">
-      <h2>Ihre Nachricht an&nbsp;uns</h2>
+      <div class="x-formcard__head"><h2>Ihre Nachricht an&nbsp;uns</h2><p class="x-formcard__req"><span aria-hidden="true">*</span> Pflichtfeld</p></div>
       <form
 				id="forminator-module-691"
 				class="forminator-ui forminator-custom-form forminator-custom-form-691 forminator-design--default  forminator_ajax"
@@ -312,6 +314,6 @@ n.style.cssText='margin:16px 0;padding:12px 16px;background:#fff3cd;border:1px s
 n.textContent='Vorschau: Das Formular ist in dieser Ansicht nicht aktiv. Auf der fertigen Website wird die Nachricht verschickt.';f.appendChild(n);}
 n.scrollIntoView({behavior:'smooth',block:'center'});},true);
 </script>
-<script src="../nxm/nxm.js?v=6" defer></script>
+<script src="../nxm/nxm.js?v=8" defer></script>
 </body>
 </html>

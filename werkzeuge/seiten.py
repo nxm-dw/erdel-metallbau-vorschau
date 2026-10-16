@@ -67,7 +67,7 @@ def kontakt(t):
       </div>
     </aside>
     <div class="x-formcard">
-      <h2>Ihre Nachricht an&nbsp;uns</h2>
+      <div class="x-formcard__head"><h2>Ihre Nachricht an&nbsp;uns</h2><p class="x-formcard__req"><span aria-hidden="true">*</span> Pflichtfeld</p></div>
       {form}
       <p class="nxm-form-hint">Ihre Angaben verwenden wir nur, um Ihre Anfrage zu bearbeiten. Details finden Sie in unserer <a href="{P}datenschutzerklaerung/">Datenschutzerklärung</a>.</p>
     </div>
@@ -128,9 +128,9 @@ def jobs(t):
       <p class="x-lead">Du hast Interesse an einer Tätigkeit bei erdel metallbau? Hier erhältst du einen Überblick über unsere offenen&nbsp;Stellen.</p>
     </div>
     <dl class="x-facts">
-      <div><dt>1925</dt><dd>gegründet in&nbsp;Kelkheim</dd></div>
-      <div><dt>4.</dt><dd>Generation im&nbsp;Familienbetrieb</dd></div>
-      <div><dt>Unikate</dt><dd>statt&nbsp;Serienware</dd></div>
+      <div><dt>Gegründet</dt><dd>1925</dd></div>
+      <div><dt>Familienbetrieb</dt><dd>4.&nbsp;Generation</dd></div>
+      <div><dt>Fertigung</dt><dd>Unikate</dd></div>
     </dl>
   </div>
 </section>
@@ -231,10 +231,10 @@ GEN = [
 def historie(t):
     items = "".join(f"""
     <li class="x-tl__item">
-      <div class="x-tl__year" aria-hidden="true">{y}</div>
       <figure class="x-tl__media"><img src="{P}{img}" alt="{g}: {sub.replace('&nbsp;', ' ')}" loading="lazy"></figure>
       <div class="x-tl__text">
-        <p class="x-eyebrow"><span class="visually-hidden">{y} – </span>{g}</p>
+        <p class="x-tl__year">{y}</p>
+        <p class="x-eyebrow">{g}</p>
         <h3>{sub}</h3>
         <p>{txt}</p>
       </div>

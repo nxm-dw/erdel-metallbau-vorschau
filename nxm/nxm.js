@@ -120,7 +120,7 @@ if (window.jQuery && !jQuery.fn.offcanvas) { jQuery.fn.offcanvas = function () {
 
 /* Überschriften im Inhalt: Schrift minimal verkleinern, falls ein gebundenes Wortpaar sonst überläuft */
 (function () {
-  var sel = 'main h1, main h2, main h3, .x-display, .x-h2, .nxm-teaser__title, .x-job__title, .x-tile__value';
+  var sel = 'main h1, main h2, main h3, .x-display, .x-h2, .nxm-teaser__title, .x-job__title, .x-partner__name';
   function fitAll() {
     document.querySelectorAll(sel).forEach(function (h) {
       if (h.closest('header.featured-full-width-img')) return;
@@ -134,4 +134,87 @@ if (window.jQuery && !jQuery.fn.offcanvas) { jQuery.fn.offcanvas = function () {
   fitAll();
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitAll);
   var t; window.addEventListener('resize', function () { clearTimeout(t); t = setTimeout(fitAll, 150); });
+})();
+
+/* Kontaktkacheln: eine gemeinsame Schriftgröße, bei der jeder Wert einzeilig in seine Kachel passt */
+(function () {
+  var vals = document.querySelectorAll('.x-tile__value');
+  if (!vals.length) return;
+  var root = vals[0].closest('.x-tiles');
+  function fit() {
+    var size = 26;
+    root.style.setProperty('--x-tile-fs', size + 'px');
+    var fits = function () { return [].every.call(vals, function (v) { return v.scrollWidth <= v.clientWidth + 1; }); };
+    while (size > 15 && !fits()) { size -= 0.5; root.style.setProperty('--x-tile-fs', size + 'px'); }
+  }
+  fit();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+  var t; window.addEventListener('resize', function () { clearTimeout(t); t = setTimeout(fit, 150); });
+})();
+
+/* Kontaktformular: Themen-Chips setzen eine kurze Themenzeile ins Nachrichtenfeld */
+(function () {
+  var ta = document.querySelector('.x-formcard textarea');
+  if (!ta) return;
+  var topics = ['Tor', 'Zaun', 'Geländer', 'Treppe', 'Briefkasten', 'Vordach', 'Möbel', 'Sonstiges'];
+  var box = document.createElement('div');
+  box.className = 'x-chips';
+  box.setAttribute('role', 'group');
+  box.setAttribute('aria-label', 'Thema wählen');
+  box.innerHTML = '<p class="x-chips__label">Worum geht es? (optional)</p>' + topics.map(function (t) {
+    return '<button type="button" class="x-chip" aria-pressed="false">' + t + '</button>';
+  }).join('');
+  ta.parentNode.insertBefore(box, ta);
+  var prefix = /^Thema: [^\n]*\n?/;
+  box.addEventListener('click', function (e) {
+    var b = e.target.closest('.x-chip');
+    if (!b) return;
+    var on = b.getAttribute('aria-pressed') !== 'true';
+    box.querySelectorAll('.x-chip').forEach(function (c) { c.setAttribute('aria-pressed', 'false'); });
+    var rest = ta.value.replace(prefix, '');
+    if (on) { b.setAttribute('aria-pressed', 'true'); ta.value = ('Thema: ' + b.textContent + '\n' + rest).slice(0, ta.maxLength > 0 ? ta.maxLength : 9999); }
+    else { ta.value = rest; }
+    ta.dispatchEvent(new Event('input', { bubbles: true }));
+    ta.dispatchEvent(new Event('keyup', { bubbles: true }));
+  });
+})();
+
+/* Scroll-Animationen: Elemente blenden beim Hereinscrollen weich ein; Zeitleiste füllt sich */
+(function () {
+  if (!('IntersectionObserver' in window)) return;
+  if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  document.documentElement.classList.add('nxm-js');
+  var groups = [
+    ['.x-intro .x-wrap > *', 0.08], ['.x-tile', 0.07], ['.x-formgrid > *', 0.1], ['.x-partner', 0.1],
+    ['.x-job', 0.08], ['.x-benefits li', 0.1], ['.x-check li', 0.05], ['.x-cta__inner > *', 0.12],
+    ['.x-tl__item', 0], ['.x-h2', 0], ['.x-section > .x-wrap > .x-eyebrow', 0],
+    ['.malu-1 .row', 0], ['.two-col-section .row > *', 0.12], ['.hero-text', 0], ['.gallery-item', 0.04],
+    ['.simple_content .content-width-50', 0], ['.member', 0.08]
+  ];
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); } });
+  }, { rootMargin: '0px 0px -8% 0px', threshold: 0.12 });
+  groups.forEach(function (g) {
+    var list = document.querySelectorAll(g[0]);
+    [].forEach.call(list, function (el, i) {
+      if (el.closest('.nxm-menu') || el.classList.contains('nxm-reveal')) return;
+      el.classList.add('nxm-reveal');
+      if (g[1]) el.style.setProperty('--d', Math.min(i % 4, 3) * g[1] + 's');
+      // schon sichtbare Elemente sofort zeigen (kein Aufblitzen beim Laden)
+      var r = el.getBoundingClientRect();
+      if (r.top < innerHeight * 0.92 && r.bottom > 0) el.classList.add('is-in'); else io.observe(el);
+    });
+  });
+  // Zeitleiste: Linie füllt sich mit dem Scrollen
+  var tl = document.querySelector('.x-tl');
+  if (tl) {
+    var tick = false;
+    var upd = function () {
+      var r = tl.getBoundingClientRect(), mid = innerHeight * 0.6;
+      var p = Math.max(0, Math.min(1, (mid - r.top) / r.height));
+      tl.style.setProperty('--x-progress', p.toFixed(3)); tick = false;
+    };
+    window.addEventListener('scroll', function () { if (!tick) { tick = true; requestAnimationFrame(upd); } }, { passive: true });
+    upd();
+  }
 })();
