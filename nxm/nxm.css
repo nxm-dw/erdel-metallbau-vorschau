@@ -315,3 +315,10 @@ header.featured-full-width-img h1{max-width:17ch}
 }
 @media (max-width:767.98px){.col-text{margin-left:0!important;margin-right:0!important;width:auto!important}}
 .forminator-ui h2,.content-border h2,.content-border-r h2{font-size:clamp(22px,2.4vw,30px);overflow-wrap:break-word}
+
+/* Wunsch 16.10.: Logo größer, keine Rasterlinien im Menü */
+:root{--nxm-head-h:92px}
+@media (max-width:767.98px){:root{--nxm-head-h:72px}}
+.nxm-head__logo img{height:60px}
+@media (max-width:767.98px){.nxm-head__logo img{height:46px}}
+.nxm-menu__grid{display:none}
