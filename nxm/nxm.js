@@ -218,3 +218,23 @@ if (window.jQuery && !jQuery.fn.offcanvas) { jQuery.fn.offcanvas = function () {
     upd();
   }
 })();
+
+/* Datenschutz-Einwilligung: ohne Haken kein Absenden (läuft vor allen anderen Absende-Handlern) */
+window.addEventListener('submit', function (e) {
+  var f = e.target;
+  if (!f || f.tagName !== 'FORM') return;
+  var box = f.querySelector('[data-nxm-consent]');
+  if (!box) return;
+  var err = box.closest('.forminator-field').querySelector('.nxm-consent__error');
+  if (box.checked) { if (err) err.hidden = true; box.removeAttribute('aria-invalid'); return; }
+  e.preventDefault(); e.stopImmediatePropagation();
+  box.setAttribute('aria-invalid', 'true');
+  if (err) err.hidden = false;
+  box.closest('.forminator-field').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  box.focus({ preventScroll: true });
+}, true);
+document.addEventListener('change', function (e) {
+  if (!e.target.matches || !e.target.matches('[data-nxm-consent]') || !e.target.checked) return;
+  var err = e.target.closest('.forminator-field').querySelector('.nxm-consent__error');
+  if (err) err.hidden = true; e.target.removeAttribute('aria-invalid');
+});

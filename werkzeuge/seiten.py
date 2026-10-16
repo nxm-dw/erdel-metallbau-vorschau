@@ -69,7 +69,6 @@ def kontakt(t):
     <div class="x-formcard">
       <div class="x-formcard__head"><h2>Ihre Nachricht an&nbsp;uns</h2><p class="x-formcard__req"><span aria-hidden="true">*</span> Pflichtfeld</p></div>
       {form}
-      <p class="nxm-form-hint">Ihre Angaben verwenden wir nur, um Ihre Anfrage zu bearbeiten. Details finden Sie in unserer <a href="{P}datenschutzerklaerung/">Datenschutzerklärung</a>.</p>
     </div>
   </div>
 </section>
@@ -279,7 +278,7 @@ UP = "wp-content/uploads/2022/10/"
 
 KONFIG = {
   "konfiguration-tueren/index.html": dict(
-    art="Türen", title="Maßanfertigungen von&nbsp;Türen", img=UP + "erdel-metallbau-hoermann-haustuere.jpg",
+    art="Türen", title="Maßanfertigungen von&nbsp;Türen", img="nxm/img/eingang-holztuer.jpg", hero="nxm/img/eingang-anthrazit.jpg", claim="Türen nach&nbsp;Maß",
     lead="Die langjährige Partnerschaft des Systemhauses HÖRMANN und erdel metallbau zeichnet sich durch Qualität, Zuverlässigkeit und Vertrauen aus. Unsere Kunden profitieren von individuellen Lösungen und einer unschlagbaren&nbsp;Produktqualität.",
     sub="Türen für innen &amp;&nbsp;außen", sub2="Hohe Sicherheitsansprüche und beste&nbsp;Wärmedämmwerte",
     text="Wenn Sie Ihren Hauseingang mit einer qualitativ hochwertigen und optisch ansprechenden Tür abrunden möchten, treffen Sie mit einer Hörmann-Eingangstür genau die richtige Wahl. Wir unterstützen Sie bei Ihrem&nbsp;Vorhaben.",
@@ -288,7 +287,7 @@ KONFIG = {
     kfw=UP + "KFW-Zuschuss-bei-RC2-Sicherheitsausstattung-1.pdf",
     step3=("Ihr Angebot", "Sobald alle Informationen vorliegen, erstellen wir Ihr individuelles&nbsp;Angebot.")),
   "konfiguration-tore/index.html": dict(
-    art="Tore", title="Qualitätsprodukte nach Ihren&nbsp;Vorstellungen", img=UP + "hoermann-garage-erdel-metallbau.jpg",
+    art="Tore", title="Qualitätsprodukte nach Ihren&nbsp;Vorstellungen", img="nxm/img/tor-anthrazit.jpg", hero=UP + "hoermann-tore-erdel-metallbau-garage.jpg", claim="Tore nach&nbsp;Maß",
     lead="Die langjährige Partnerschaft des Systemhauses HÖRMANN und erdel metallbau zeichnet sich durch Qualität, Zuverlässigkeit und Vertrauen aus. Unsere Kunden profitieren von individuellen Lösungen und einer unschlagbaren&nbsp;Produktqualität.",
     sub="Industrietore und&nbsp;Antriebe", sub2="Hier schwingt Qualität in schöner&nbsp;Optik",
     text="Alles spricht für das Original: Qualität und Sicherheit, Optik und Komfort und die ausgereifte Technik. In jedem Hörmann-Tor steckt die Erfahrung von über 50 Jahren Know-how im Bau von&nbsp;Garagentoren.",
@@ -311,7 +310,7 @@ def konfig_for(rel):
   <div class="x-wrap x-split x-split--konf">
     <div>
       <p class="x-eyebrow">Hörmann · Konfiguration {d['art']}</p>
-      <h1 class="x-display">{d['title']}</h1>
+      <h2 class="x-display">{d['title']}</h2>
       <p class="x-lead">{d['lead']}</p>
       <div class="x-cta__actions x-konf-actions">
         <a class="nxm-btn nxm-btn--dark" href="#anfrage">Anfrage starten {ARROW}</a>
@@ -383,15 +382,54 @@ def konfig_for(rel):
     return fn
 
 
+def bewerbung(t):
+    s = t.find("<form"); e = t.find("</form>") + len("</form>")
+    form = t[s:e]
+    return f"""
+<section class="x-section x-intro x-intro--compact">
+  <div class="x-wrap">
+    <p class="x-eyebrow">Bewerbung</p>
+    <h1 class="x-display">Jetzt online&nbsp;bewerben</h1>
+    <p class="x-lead">Schick uns deine Unterlagen direkt über das Formular. Lebenslauf, Zeugnisse oder Portfolio kannst du als Datei&nbsp;hochladen.</p>
+  </div>
+</section>
+
+<section class="x-section x-formsec x-section--flush" id="bewerbung">
+  <div class="x-wrap x-formgrid">
+    <aside class="x-formside">
+      <img src="{P}nxm/img/gelaender-edelstahl.jpg" alt="" loading="lazy">
+      <div class="x-formside__body">
+        <p class="x-eyebrow x-eyebrow--light">So geht's</p>
+        <h2>In drei&nbsp;Schritten</h2>
+        <ol class="x-steps">
+          <li><strong>Angaben eintragen</strong><span>Name, Telefon und&nbsp;E&#8209;Mail.</span></li>
+          <li><strong>Unterlagen hochladen</strong><span>Anschreiben, Lebenslauf und weitere&nbsp;Dokumente.</span></li>
+          <li><strong>Absenden</strong><span>Gerne mit ein paar Worten zu&nbsp;dir.</span></li>
+        </ol>
+        <p class="x-formside__hint">Lieber per E-Mail oder Post? Sende deine Bewerbung an <a href="mailto:{MAIL}">{MAIL}</a> oder an erdel metallbau, Auf der Herrnmauer 12, 65779 Kelkheim im Taunus. <a href="{P}jobs/">Zu den offenen&nbsp;Stellen</a></p>
+      </div>
+    </aside>
+    <div class="x-formcard">
+      <div class="x-formcard__head"><h2>Deine&nbsp;Bewerbung</h2><p class="x-formcard__req"><span aria-hidden="true">*</span> Pflichtfeld</p></div>
+      {form}
+    </div>
+  </div>
+</section>
+"""
+
+
 PAGES = {"kontakt/index.html": kontakt, "jobs/index.html": jobs, "historie/index.html": historie, "kalkulator-job1/index.html": stelle,
          "konfiguration-tueren/index.html": konfig_for("konfiguration-tueren/index.html"),
-         "konfiguration-tore/index.html": konfig_for("konfiguration-tore/index.html")}
+         "konfiguration-tore/index.html": konfig_for("konfiguration-tore/index.html"),
+         "bewerbungsformular/index.html": bewerbung}
 
 for rel, fn in PAGES.items():
     p = os.path.join(ROOT, rel)
     t = open(p, encoding="utf-8").read()
     a = t.find('<div class="main-body">') + len('<div class="main-body">')
     b = t.find('<footer class="main-footer">')
+    if b < 0:
+        b = t.find('</main>', a)   # Bewerbungsseite hat keinen main-footer
     assert a > 30 and b > a, rel
     inner = t[a:b]
     if "nxm:seite" in inner:
@@ -400,7 +438,13 @@ for rel, fn in PAGES.items():
     new = "\n<!-- nxm:seite -->" + fn(t) + "<!-- /nxm:seite -->\n</div>\n"
     # Rest des alten main-body (schließendes div) entfernen: wir schließen selbst
     t = t[:a] + new + t[b:]
-    if rel.startswith("konfiguration-"):
+    if rel.startswith(("konfiguration-", "bewerbungsformular")):
         t = re.sub(r'<header class="main-header">.*?</header>', '', t, count=1, flags=re.S)
+    if rel in KONFIG and "featured-full-width-img" not in t:
+        d = KONFIG[rel]
+        hero = (f'<header class="main-header featured-full-width-img bg-dark text-light mb-3" style="background-image: url(\'{P}{d["hero"]}\')">'
+                f'<div class="container h-100 d-flex align-items-end pb-3 ms-auto p-2 bd-highlight"><h1>{d["claim"]}</h1></div></header>\n')
+        t = t.replace('<main id="main" class="main-content">', '<main id="main" class="main-content">\n' + hero, 1)
+        t = t.replace('<body class="nxm-nohero ', '<body class="nxm-hero ', 1)
     open(p, "w", encoding="utf-8").write(t)
     print("neu:", rel)

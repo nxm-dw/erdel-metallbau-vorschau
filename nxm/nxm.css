@@ -894,3 +894,37 @@ a.x-partner,a.x-partner:visited,a.x-partner:focus,a.x-partner:active,a.x-partner
 }
 @media (max-width:991.98px){.x-split--konf{grid-template-columns:minmax(0,1fr)}.x-steps3{grid-template-columns:1fr}.x-steps3 li+li{padding-left:0;border-left:0;border-top:1px solid var(--nxm-line)}}
 @media (max-width:575.98px){.x-konf-actions .nxm-btn{flex:1 1 100%;justify-content:center}}
+
+/* Datenschutz-Einwilligung */
+#forminator-module-691 #nxm-consent{order:8;grid-column:1/-1}
+#forminator-module-691 .forminator-row-last>.forminator-col{order:9}
+.x-formcard .nxm-consent,.x-formcard .forminator-checkbox:has([data-nxm-consent]){display:flex!important;align-items:flex-start;gap:14px;margin:4px 0 0!important}
+.x-formcard [data-nxm-consent]+.forminator-checkbox-box{margin-top:2px}
+.x-formcard [data-nxm-consent]~.forminator-checkbox-label{font-size:14px!important;line-height:1.6!important;color:#4a4a4a!important}
+.x-formcard [data-nxm-consent]~.forminator-checkbox-label a{color:var(--nxm-ink);text-decoration:underline;text-decoration-color:var(--nxm-accent);text-underline-offset:.2em}
+.x-formcard [data-nxm-consent]~.forminator-checkbox-label a:hover{color:var(--nxm-accent)}
+.x-formcard [data-nxm-consent][aria-invalid="true"]+.forminator-checkbox-box{border-color:#b3261e!important;box-shadow:0 0 0 3px rgba(179,38,30,.15)}
+.nxm-consent__error{margin:8px 0 0 36px;font-size:14px!important;color:#b3261e!important;font-weight:700}
+
+/* Linke Box im Formularbereich: Inhalt oben, läuft auf dem Desktop mit */
+.x-formside{align-items:flex-start}
+.x-formside__body{align-self:flex-start!important}
+@media (min-width:992px){.x-formside__body{position:sticky;top:calc(var(--nxm-head-h) + 24px)}}
+.x-formcard label.forminator-checkbox:has([data-nxm-consent]),.x-formcard .nxm-consent{align-items:flex-start!important}
+label.forminator-checkbox:has([data-nxm-consent]) .forminator-checkbox-box{margin-top:3px!important;align-self:flex-start}
+.forminator-checkbox-label .forminator-required{display:inline!important;margin-left:2px}
+.nxm-nowrap{white-space:nowrap}
+.nxm-consent__error{margin-left:36px}
+/* Kontakt: linke Box ohne Mitlaufen, Inhalt oben */
+@media (min-width:992px){.x-formgrid:not(.x-formgrid--konf) .x-formside__body{position:relative;top:auto}}
+/* Themen-Chips als gleichmäßiges Raster */
+.x-chips{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:10px 0 12px}
+.x-chip{width:100%;text-align:center;padding:10px 8px;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:575.98px){.x-chips{grid-template-columns:repeat(2,minmax(0,1fr))}}
+/* Einwilligungstext als normaler Fließtext (Forminator setzt display:flex) */
+label.forminator-checkbox:has([data-nxm-consent]) .forminator-checkbox-label{display:block!important;flex:1 1 auto;min-width:0}
+label.forminator-checkbox .forminator-checkbox-label .nxm-nowrap{display:inline!important;width:auto!important}
+.x-intro--compact{padding-bottom:clamp(28px,4vw,48px)}
+.x-section--flush{padding-top:0}
+body.nxm-nohero:has(.x-intro) #content{padding-top:var(--nxm-head-h)}
+.x-eyebrow--light,body.nxm-nohero main .x-eyebrow--light{color:var(--nxm-accent-light)!important}

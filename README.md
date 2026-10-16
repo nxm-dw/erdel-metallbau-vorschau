@@ -16,7 +16,8 @@ Vorschau: https://nxm-dw.github.io/erdel-metallbau-vorschau/
   6. `bilder.py` – Stockfotos durch Archivfotos ersetzen, Teaser „+ mehr“
   7. `seiten.py` – neuer Inhalt für Kontakt, Jobs, Historie, Stellenseite (Texte vom Kunden)
   8. `abschluss.py` – Abschlussband auf Referenzen, Leistungen, Hörmann
-  9. `paare_loesen.py` – zu lange Wortpaare lösen (nach `umbrueche.py` laufen lassen)
+  9. `einwilligung.py` – Datenschutz-Pflichtfeld in allen Formularen (nach `seiten.py`)
+  10. `paare_loesen.py` – zu lange Wortpaare lösen (nach `umbrueche.py` laufen lassen)
 
 Prüfskripte (Playwright, im Scratchpad entwickelt): Anschnitt, zerrissene Wörter, Einzelwort-Umbrüche, Kontrast.
 
@@ -31,3 +32,6 @@ Gelb markierte Stellen im Impressum: Funktion von Marc Erdel, Registergericht, H
 
 ## Hinweis
 Formulare senden in der Vorschau nicht ab (statische Seite, Abfang-Skript zeigt Hinweis).
+
+## Hinweis Livegang (WordPress/Forminator)
+Das Datenschutz-Kästchen im Kontaktformular ist ein eigenes Feld (`name="datenschutz"`). Beim Livegang in Forminator als echtes GDPR-/Checkbox-Pflichtfeld anlegen, damit es auch serverseitig geprüft wird.
