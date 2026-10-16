@@ -10,12 +10,12 @@ U = "wp-content/uploads/"
 
 MENU = [
     ("Start", "", U + "2022/07/header.jpg"),
-    ("Referenzen", "referenzen/", U + "2022/09/erdel-metallbau-referenzen-banner.jpg"),
-    ("Leistungen", "leistungen/", U + "2022/09/erdel-metallbau-leistungen-banner.jpg"),
+    ("Referenzen", "referenzen/", "nxm/img/zaun-lamellen.jpg"),
+    ("Leistungen", "leistungen/", "nxm/img/tor-anthrazit.jpg"),
     ("Hörmann", "hoermann/", U + "2022/10/garagentor-garage-metallbau-erdel-hoermann.jpg"),
-    ("Historie", "historie/", U + "2022/09/erdel-metalbau-historie-banner.jpg"),
+    ("Historie", "historie/", "nxm/img/weltkugel.jpg"),
     ("Jobs", "jobs/", U + "2022/09/erdel-metallbau-background-mitarbeiter.jpg"),
-    ("Kontakt", "kontakt/", U + "2022/11/erdel-metallbau-schlosser-arbeiten-leistungen.jpg"),
+    ("Kontakt", "kontakt/", "nxm/img/haus-terrasse.jpg"),
 ]
 
 ICON = {
@@ -27,55 +27,42 @@ ICON = {
 
 
 def header(p, current):
+    """Kopf und Menü im Stil des freigegebenen Entwurfs: Logo rechts, zwei Striche,
+    Menü als abgedunkeltes Vollbildfoto mit schlichter Liste links."""
+    cur_i = next((i for i, (_, h, _) in enumerate(MENU) if h == current), 0)
     items = []
     for i, (label, href, img) in enumerate(MENU):
         cur = ' aria-current="page"' if href == current else ""
-        items.append(
-            f'<li style="--i:{i}"><a href="{p}{href}index.html" data-nxm-img="{i}"{cur}>'
-            f'<span class="nxm-menu__no">{i + 1:02d}</span><span class="nxm-menu__label">{label}</span>'
-            f'<span class="nxm-menu__arrow">{ICON["arrow"]}</span></a></li>'
-        )
-    imgs = "".join(
-        f'<img src="{p}{img}" alt="" loading="lazy" decoding="async" data-nxm-img="{i}"{" class=is-active" if i == 0 else ""}>'
+        items.append(f'<li style="--i:{i}"><a href="{p}{href}index.html" data-nxm-img="{i}"{cur}>{label}</a></li>')
+    bgs = "".join(
+        f'<img src="{p}{img}" alt="" decoding="async" data-nxm-img="{i}"{" class=is-active" if i == cur_i else ""}>'
         for i, (_, _, img) in enumerate(MENU)
     )
     return f"""<!-- nxm:header -->
 <a class="nxm-skip" href="#content">Zum Inhalt springen</a>
 <header class="nxm-head" id="nxm-head">
-  <a class="nxm-head__logo" href="{p}index.html" aria-label="erdel metallbau – zur Startseite">
-    <img src="{p}wp-content/themes/erdel/assets/images/logo.svg" alt="erdel metallbau" width="170" height="52">
-  </a>
   <div class="nxm-head__right">
     <a class="nxm-head__tel" href="tel:{TEL}">{ICON["tel"]}<span>{TEL_TXT}</span></a>
-    <a class="nxm-head__cta" href="{p}kontakt/index.html">Projekt anfragen</a>
-    <button class="nxm-burger" type="button" aria-expanded="false" aria-controls="nxm-menu">
-      <span class="nxm-burger__label" data-open="Menü" data-close="Schließen">Menü</span>
-      <span class="nxm-burger__icon" aria-hidden="true"><i></i><i></i><i></i></span>
+    <button class="nxm-burger" type="button" aria-expanded="false" aria-controls="nxm-menu" aria-label="Menü öffnen">
+      <span class="nxm-burger__icon" aria-hidden="true"><i></i><i></i></span>
     </button>
+    <a class="nxm-head__logo" href="{p}index.html" aria-label="erdel metallbau – zur Startseite">
+      <img src="{p}wp-content/themes/erdel/assets/images/logo.svg" alt="erdel metallbau" width="170" height="52">
+    </a>
   </div>
 </header>
 <div class="nxm-menu" id="nxm-menu" role="dialog" aria-modal="true" aria-label="Hauptmenü" aria-hidden="true">
-  <div class="nxm-menu__grid" aria-hidden="true"></div>
+  <div class="nxm-menu__bg" aria-hidden="true">{bgs}</div>
   <div class="nxm-menu__inner">
-    <nav class="nxm-menu__nav" aria-label="Hauptnavigation"><ol>{"".join(items)}</ol></nav>
-    <aside class="nxm-menu__aside">
-      <div class="nxm-menu__media">{imgs}<span class="nxm-menu__badge">Metallbau aus Kelkheim<br>seit 1925</span></div>
-      <div class="nxm-menu__contact">
-        <p class="nxm-eyebrow">Direkt erreichen</p>
-        <a class="nxm-menu__big" href="tel:{TEL}">{TEL_TXT}</a>
-        <a class="nxm-menu__mail" href="mailto:{MAIL}">{MAIL}</a>
-        <p class="nxm-menu__meta">Auf der Herrnmauer 12, 65779 Kelkheim im Taunus<br>Mo–Do 8:00–16:30 Uhr · Fr 8:00–13:00 Uhr</p>
-        <div class="nxm-menu__actions">
-          <a class="nxm-btn nxm-btn--light" href="{p}kontakt/index.html">Projekt anfragen {ICON["arrow"]}</a>
-          <a class="nxm-btn nxm-btn--ghost" href="{WA}" target="_blank" rel="noopener">{ICON["wa"]} WhatsApp</a>
-        </div>
-      </div>
-    </aside>
+    <nav class="nxm-menu__nav" aria-label="Hauptnavigation"><ul>{"".join(items)}</ul></nav>
+    <a class="nxm-menu__cta" href="{p}kontakt/index.html"><span aria-hidden="true">&gt;</span> Kontaktformular</a>
   </div>
   <div class="nxm-menu__foot">
-    <a href="{p}impressum/index.html">Impressum</a><a href="{p}datenschutzerklaerung/index.html">Datenschutz</a>
-    <span>geradlinig · modern · individuell</span>
+    <p>Auf der Herrnmauer 12, 65779 Kelkheim im Taunus<br>
+      <a href="tel:{TEL}">+49 (0) 6195-63192</a> · <a href="mailto:{MAIL}">{MAIL}</a> · <a href="{WA}" target="_blank" rel="noopener">WhatsApp</a></p>
+    <p class="nxm-menu__legal"><a href="{p}impressum/index.html">Impressum</a><a href="{p}datenschutzerklaerung/index.html">Datenschutz</a></p>
   </div>
+  <p class="nxm-menu__claim" aria-hidden="true">geradlinig<br>modern<br>individuell</p>
 </div>
 <!-- /nxm:header -->
 """
@@ -166,6 +153,9 @@ for f in sorted(glob.glob(os.path.join(ROOT, "**", "index.html"), recursive=True
     t = open(f, encoding="utf-8").read()
     o = t
 
+    if "nxm:header" in t:
+        a = t.index("<!-- nxm:header -->"); b = t.index("<!-- /nxm:header -->") + len("<!-- /nxm:header -->\n")
+        t = t[:a] + header(p, current) + t[b:]
     if "nxm:header" not in t:
         s = t.find('<div class="container sticky">')
         e = t.find('<div id="content"')
@@ -177,7 +167,7 @@ for f in sorted(glob.glob(os.path.join(ROOT, "**", "index.html"), recursive=True
         assert s > 0 and e > s, rel
         t = t[:s] + footer(p) + "\n" + actionbar(p) + t[e:]
         t = t.replace("</head>",
-                      f'<link rel="preload" href="{p}nxm/fonts/manrope-latin.woff2" as="font" type="font/woff2" crossorigin>\n'
+                      f'<link rel="preload" href="{p}nxm/fonts/oxygen-300-latin.woff2" as="font" type="font/woff2" crossorigin>\n'
                       f'<link rel="stylesheet" href="{p}nxm/nxm.css?v=1">\n<meta name="theme-color" content="#141414">\n</head>', 1)
         t = t.replace("</body>", f'<script src="{p}nxm/nxm.js?v=1" defer></script>\n</body>', 1)
         has_hero = "featured-full-width-img" in t

@@ -44,7 +44,7 @@ Es gilt die Handwerksordnung (HwO), abrufbar unter <a href="https://www.gesetze-
 """
 
 FONTS = """<h3>Schriftarten (lokal eingebunden)</h3>
-<p>Für eine einheitliche Darstellung nutzt diese Website die Schriftart „Manrope“. Die Schriftdateien liegen auf unserem eigenen Server. Beim Aufruf der Seite wird keine Verbindung zu Servern Dritter, etwa von Google, aufgebaut, und es werden dabei keine personenbezogenen Daten an Dritte übermittelt.</p>"""
+<p>Für eine einheitliche Darstellung nutzt diese Website die Schriftart „Oxygen“. Die Schriftdateien liegen auf unserem eigenen Server. Beim Aufruf der Seite wird keine Verbindung zu Servern Dritter, etwa von Google, aufgebaut, und es werden dabei keine personenbezogenen Daten an Dritte übermittelt.</p>"""
 
 NEU = """<!-- nxm:datenschutz-ergaenzung -->
 <h3>Anfragen über die Konfiguratoren für Tore und Türen</h3>

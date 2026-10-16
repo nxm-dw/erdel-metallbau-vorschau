@@ -2,6 +2,7 @@
 import os, glob
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 FIX = [
+    ("Schlosser- und Metallbauarbeiten", "Schlosser- und&nbsp;Metallbauarbeiten"),
     ('class="forminator-label">Strasse <span', 'class="forminator-label">Straße <span'),
     ("Bewirb dich jetzt über unser&nbsp;Bewerbungsformular", "Jetzt online&nbsp;bewerben"),
     (">Strasse<", ">Straße<"),

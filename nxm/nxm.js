@@ -13,7 +13,8 @@
     body.classList.toggle('nxm-menu-open', open);
     btn.setAttribute('aria-expanded', open ? 'true' : 'false');
     menu.setAttribute('aria-hidden', open ? 'false' : 'true');
-    label.textContent = open ? label.dataset.close : label.dataset.open;
+    btn.setAttribute('aria-label', open ? 'Menü schließen' : 'Menü öffnen');
+    if (label) label.textContent = open ? label.dataset.close : label.dataset.open;
     if (open) {
       lastFocus = document.activeElement;
       var first = menu.querySelector('.nxm-menu__nav a');
@@ -41,7 +42,7 @@
   });
 
   // Bildvorschau im Menü
-  var imgs = menu.querySelectorAll('.nxm-menu__media img');
+  var imgs = menu.querySelectorAll('.nxm-menu__bg img');
   function show(n) {
     imgs.forEach(function (img) { img.classList.toggle('is-active', img.dataset.nxmImg === n); });
   }
@@ -50,7 +51,11 @@
     a.addEventListener('focus', function () { show(a.dataset.nxmImg); });
   });
   var cur = menu.querySelector('.nxm-menu__nav a[aria-current]');
-  if (cur) show(cur.dataset.nxmImg);
+  var home = cur ? cur.dataset.nxmImg : '0';
+  show(home);
+  // Verlässt die Maus die Liste, kehrt das Bild der aktuellen Seite zurück
+  var list = menu.querySelector('.nxm-menu__nav ul');
+  if (list) list.addEventListener('mouseleave', function () { show(home); });
 
   // Kopfzeile: beim Runterscrollen ausblenden, beim Hochscrollen zeigen
   var lastY = window.scrollY, ticking = false;
