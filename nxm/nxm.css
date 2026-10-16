@@ -928,3 +928,9 @@ label.forminator-checkbox .forminator-checkbox-label .nxm-nowrap{display:inline!
 .x-section--flush{padding-top:0}
 body.nxm-nohero:has(.x-intro) #content{padding-top:var(--nxm-head-h)}
 .x-eyebrow--light,body.nxm-nohero main .x-eyebrow--light{color:var(--nxm-accent-light)!important}
+/* Linke Box: Inhalt bleibt beim Scrollen durchs Formular stehen.
+   overflow:clip statt hidden – sonst wird die Box selbst zum Scroll-Container und sticky verschiebt nur nach unten. */
+.x-formside{overflow:clip}
+@media (min-width:992px){
+  .x-formgrid .x-formside__body,.x-formgrid:not(.x-formgrid--konf) .x-formside__body{position:sticky!important;top:calc(var(--nxm-head-h) + 24px)!important}
+}
