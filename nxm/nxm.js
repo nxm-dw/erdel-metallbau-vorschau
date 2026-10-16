@@ -154,7 +154,7 @@ if (window.jQuery && !jQuery.fn.offcanvas) { jQuery.fn.offcanvas = function () {
 
 /* Kontaktformular: Themen-Chips setzen eine kurze Themenzeile ins Nachrichtenfeld */
 (function () {
-  var ta = document.querySelector('.x-formcard textarea');
+  var ta = document.querySelector('#forminator-module-691 textarea');
   if (!ta) return;
   var topics = ['Tor', 'Zaun', 'Geländer', 'Treppe', 'Briefkasten', 'Vordach', 'Möbel', 'Sonstiges'];
   var box = document.createElement('div');

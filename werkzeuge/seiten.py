@@ -273,7 +273,119 @@ def historie(t):
 """
 
 
-PAGES = {"kontakt/index.html": kontakt, "jobs/index.html": jobs, "historie/index.html": historie, "kalkulator-job1/index.html": stelle}
+I_PDF = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2h8l6 6v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm7 1.5V9h5.5L13 3.5zM8 13v5h1.4v-1.6h.8c1.1 0 1.8-.6 1.8-1.7S11.3 13 10.2 13H8zm1.4 1.1h.7c.4 0 .6.2.6.6s-.2.6-.6.6h-.7v-1.2zM12.4 13v5h1.7c1.5 0 2.4-.9 2.4-2.5S15.6 13 14.1 13h-1.7zm1.4 1.2h.2c.7 0 1.1.4 1.1 1.3s-.4 1.3-1.1 1.3h-.2v-2.6z"/></svg>'
+I_EXT = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3h7v7h-2V6.4l-9.3 9.3-1.4-1.4L17.6 5H14V3zM5 5h6v2H5v12h12v-6h2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"/></svg>'
+UP = "wp-content/uploads/2022/10/"
+
+KONFIG = {
+  "konfiguration-tueren/index.html": dict(
+    art="Türen", title="Maßanfertigungen von&nbsp;Türen", img=UP + "erdel-metallbau-hoermann-haustuere.jpg",
+    lead="Die langjährige Partnerschaft des Systemhauses HÖRMANN und erdel metallbau zeichnet sich durch Qualität, Zuverlässigkeit und Vertrauen aus. Unsere Kunden profitieren von individuellen Lösungen und einer unschlagbaren&nbsp;Produktqualität.",
+    sub="Türen für innen &amp;&nbsp;außen", sub2="Hohe Sicherheitsansprüche und beste&nbsp;Wärmedämmwerte",
+    text="Wenn Sie Ihren Hauseingang mit einer qualitativ hochwertigen und optisch ansprechenden Tür abrunden möchten, treffen Sie mit einer Hörmann-Eingangstür genau die richtige Wahl. Wir unterstützen Sie bei Ihrem&nbsp;Vorhaben.",
+    check=["Anschrift inkl. Telefonnummer und&nbsp;E&#8209;Mail&#8209;Adresse", "Zwei Fotos der bestehenden Haustür (innen und außen)", "Höhe und Breite", "Türvariante", "Gewünschtes Motiv bzw. gewünschte Farbe", "Bei Neubauten: Bauplan mit Maßen&nbsp;(optional)"],
+    downloads=[("Katalog Aluminium-Haustüren", UP + "Katalog_Aluminium_Haustueren.pdf"), ("Hörmann-Vorzugsfarben", UP + "HOeRMANN_Vorzugsfarben.pdf"), ("Aufmaßblatt", UP + "Aufmassblatt.pdf")],
+    kfw=UP + "KFW-Zuschuss-bei-RC2-Sicherheitsausstattung-1.pdf",
+    step3=("Ihr Angebot", "Sobald alle Informationen vorliegen, erstellen wir Ihr individuelles&nbsp;Angebot.")),
+  "konfiguration-tore/index.html": dict(
+    art="Tore", title="Qualitätsprodukte nach Ihren&nbsp;Vorstellungen", img=UP + "hoermann-garage-erdel-metallbau.jpg",
+    lead="Die langjährige Partnerschaft des Systemhauses HÖRMANN und erdel metallbau zeichnet sich durch Qualität, Zuverlässigkeit und Vertrauen aus. Unsere Kunden profitieren von individuellen Lösungen und einer unschlagbaren&nbsp;Produktqualität.",
+    sub="Industrietore und&nbsp;Antriebe", sub2="Hier schwingt Qualität in schöner&nbsp;Optik",
+    text="Alles spricht für das Original: Qualität und Sicherheit, Optik und Komfort und die ausgereifte Technik. In jedem Hörmann-Tor steckt die Erfahrung von über 50 Jahren Know-how im Bau von&nbsp;Garagentoren.",
+    check=["Anschrift inkl. Telefonnummer und&nbsp;E&#8209;Mail&#8209;Adresse", "Zwei Fotos der bestehenden Garage (innen und außen)", "Maße laut Aufmaßblatt", "Wunschfarbe: Standard ist Verkehrsweiß RAL 9016, weitere Hörmann-Vorzugsfarben im&nbsp;Download", "Größe der Sektionen und Wunsch der Oberfläche", "Ist ein Antrieb gewünscht?", "Bei Neubauten: Bauplan mit&nbsp;Maßen"],
+    downloads=[("Aufmaßblatt", UP + "Aufmassblatt.pdf"), ("Hörmann-Vorzugsfarben", UP + "HOeRMANN_Vorzugsfarben-1.pdf"), ("Größe der Sektionen", UP + "HOeRMANN-Sektionaltor-Sektionen.pdf"), ("Oberflächen", UP + "HOeRMANN-Oberflaechen.pdf")],
+    kfw=UP + "KFW-Zuschuss-bei-RC2-Sicherheitsausstattung.pdf",
+    step3=("Termin vor Ort &amp; Angebot", "Wir nehmen die genauen Aufmaße, beraten Sie persönlich und erstellen Ihr&nbsp;Angebot.")),
+}
+
+
+def konfig_for(rel):
+    d = KONFIG[rel]
+    def fn(t):
+        s = t.find("<form"); e = t.find("</form>") + len("</form>")
+        form = t[s:e]
+        checks = "".join(f"<li>{c}</li>" for c in d["check"])
+        dls = "".join(f'<a class="x-dl" href="{P}{h}" target="_blank" rel="noopener">{I_PDF}<span class="x-dl__name">{n}</span><span class="x-dl__meta">PDF öffnen</span></a>' for n, h in d["downloads"])
+        return f"""
+<section class="x-section x-konf-hero">
+  <div class="x-wrap x-split x-split--konf">
+    <div>
+      <p class="x-eyebrow">Hörmann · Konfiguration {d['art']}</p>
+      <h1 class="x-display">{d['title']}</h1>
+      <p class="x-lead">{d['lead']}</p>
+      <div class="x-cta__actions x-konf-actions">
+        <a class="nxm-btn nxm-btn--dark" href="#anfrage">Anfrage starten {ARROW}</a>
+        <a class="nxm-btn nxm-btn--outline" href="https://www.hoermann.de/konfigurator/" target="_blank" rel="noopener">Hörmann&#8209;Konfigurator {I_EXT}</a>
+      </div>
+    </div>
+    <figure class="x-konf-media"><img src="{P}{d['img']}" alt="Hörmann {d['art']} von erdel metallbau"><figcaption><strong>{d['sub']}</strong><span>{d['sub2']}</span></figcaption></figure>
+  </div>
+</section>
+
+<section class="x-section x-section--tight">
+  <div class="x-wrap">
+    <p class="x-lead x-lead--wide">{d['text']}</p>
+    <ol class="x-steps3">
+      <li><span class="x-steps3__no">01</span><strong>Unterlagen&nbsp;zusammenstellen</strong><span>Fotos, Maße und Wünsche, die Checkliste unten hilft&nbsp;dabei.</span></li>
+      <li><span class="x-steps3__no">02</span><strong>Anfrage senden</strong><span>Alles direkt im Formular hochladen, auch Ihre&nbsp;Hörmann&#8209;Konfiguration.</span></li>
+      <li><span class="x-steps3__no">03</span><strong>{d['step3'][0]}</strong><span>{d['step3'][1]}</span></li>
+    </ol>
+  </div>
+</section>
+
+<section class="x-section x-section--stone">
+  <div class="x-wrap x-two x-two--konf">
+    <div>
+      <p class="x-eyebrow">Checkliste</p>
+      <h2 class="x-h3">Das brauchen wir von&nbsp;Ihnen</h2>
+      <ul class="x-check">{checks}</ul>
+    </div>
+    <div>
+      <p class="x-eyebrow">Downloads</p>
+      <h2 class="x-h3">Unterlagen &amp;&nbsp;Hilfen</h2>
+      <div class="x-dls">{dls}</div>
+      <a class="x-kfw" href="{P}{d['kfw']}" target="_blank" rel="noopener">
+        <span class="x-kfw__tag">KfW-Förderung</span>
+        <strong>Zuschuss für Einbruchschutz</strong>
+        <span>Mit dem KfW-Programm können Sie sich Zuschüsse für verschiedene Maßnahmen sichern, zum Beispiel für Türen mit RC2-Sicherheitsausstattung.</span>
+        <span class="x-kfw__go">Infos zum Zuschuss (PDF) {ARROW}</span>
+      </a>
+      <a class="x-konfig" href="https://www.hoermann.de/konfigurator/" target="_blank" rel="noopener">
+        <span><strong>Online konfigurieren</strong><span>Stellen Sie Ihr Wunschmodell im Hörmann&#8209;Konfigurator zusammen und laden Sie die Konfiguration im Formular&nbsp;hoch.</span></span>
+        {I_EXT}
+      </a>
+    </div>
+  </div>
+</section>
+
+<section class="x-section x-formsec" id="anfrage">
+  <div class="x-wrap x-formgrid x-formgrid--konf">
+    <aside class="x-formside">
+      <img src="{P}{d['img']}" alt="" loading="lazy">
+      <div class="x-formside__body">
+        <p class="x-eyebrow x-eyebrow--light">Anfrageformular</p>
+        <h2>Ihre Anfrage für {d['art']}</h2>
+        <ol class="x-steps">
+          <li><strong>Daten eintragen</strong><span>Name, Anschrift und&nbsp;Kontakt.</span></li>
+          <li><strong>Wünsche angeben</strong><span>Farbe, Maße und gewünschte&nbsp;Ausführung.</span></li>
+          <li><strong>Dateien hochladen</strong><span>Fotos, Aufmaßblatt oder&nbsp;Konfiguration.</span></li>
+        </ol>
+        <p class="x-formside__hint">Erst wenn alle Informationen vorliegen, können wir ein passendes Angebot erstellen. Bei Rückfragen erreichen Sie uns unter <a href="tel:{TEL}">{TEL_TXT}</a>.</p>
+      </div>
+    </aside>
+    <div class="x-formcard">
+      <div class="x-formcard__head"><h2>Anfrage&nbsp;{d['art']}</h2><p class="x-formcard__req"><span aria-hidden="true">*</span> Pflichtfeld</p></div>
+      {form}
+    </div>
+  </div>
+</section>
+"""
+    return fn
+
+
+PAGES = {"kontakt/index.html": kontakt, "jobs/index.html": jobs, "historie/index.html": historie, "kalkulator-job1/index.html": stelle,
+         "konfiguration-tueren/index.html": konfig_for("konfiguration-tueren/index.html"),
+         "konfiguration-tore/index.html": konfig_for("konfiguration-tore/index.html")}
 
 for rel, fn in PAGES.items():
     p = os.path.join(ROOT, rel)
@@ -288,5 +400,7 @@ for rel, fn in PAGES.items():
     new = "\n<!-- nxm:seite -->" + fn(t) + "<!-- /nxm:seite -->\n</div>\n"
     # Rest des alten main-body (schließendes div) entfernen: wir schließen selbst
     t = t[:a] + new + t[b:]
+    if rel.startswith("konfiguration-"):
+        t = re.sub(r'<header class="main-header">.*?</header>', '', t, count=1, flags=re.S)
     open(p, "w", encoding="utf-8").write(t)
     print("neu:", rel)
