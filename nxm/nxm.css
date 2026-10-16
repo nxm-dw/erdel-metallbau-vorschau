@@ -454,3 +454,6 @@ body.nxm-hero .nxm-head:not(.is-scrolled){background:rgba(255,255,255,.28);-webk
   radial-gradient(ellipse 90% 60% at 20% 92%,rgba(10,10,10,.55) 0%,rgba(10,10,10,.2) 50%,rgba(10,10,10,0) 80%),
   linear-gradient(to top,rgba(10,10,10,.45) 0%,rgba(10,10,10,.1) 32%,rgba(10,10,10,0) 50%)}}
 @media (min-width:768px) and (max-width:991.98px){.two-col-section h2{font-size:24px}}
+/* Menü: Adresse lesbar, kein Kopfzeilen-Schleier über dem Menü */
+.nxm-menu__foot p{color:rgba(255,255,255,.85)!important;font-size:15px;letter-spacing:.05em}
+body.nxm-menu-open .nxm-head,body.nxm-menu-open.nxm-hero .nxm-head:not(.is-scrolled){background:transparent!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;border-bottom-color:transparent!important}
