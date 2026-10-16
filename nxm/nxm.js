@@ -1,3 +1,6 @@
+/* Altes Theme-Skript ruft Bootstrap-Offcanvas der früheren Navigation auf */
+if (window.jQuery && !jQuery.fn.offcanvas) { jQuery.fn.offcanvas = function () { return this; }; }
+
 /* erdel metallbau – Menü und Kopfzeile */
 (function () {
   var body = document.body;
@@ -72,4 +75,63 @@
     if (!ticking) { requestAnimationFrame(onScroll); ticking = true; }
   }, { passive: true });
   onScroll();
+})();
+
+/* Öffnungszeiten: Live-Status nach deutscher Zeit */
+(function () {
+  var box = document.querySelector('[data-nxm-open]');
+  if (!box) return;
+  var parts = {};
+  try {
+    new Intl.DateTimeFormat('de-DE', { timeZone: 'Europe/Berlin', weekday: 'short', hour: '2-digit', minute: '2-digit', hour12: false })
+      .formatToParts(new Date()).forEach(function (p) { parts[p.type] = p.value; });
+  } catch (e) { return; }
+  var day = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'].indexOf(parts.weekday.replace('.', ''));
+  var min = parseInt(parts.hour, 10) * 60 + parseInt(parts.minute, 10);
+  var open = (day >= 1 && day <= 4 && min >= 480 && min < 990) || (day === 5 && min >= 480 && min < 780);
+  box.classList.add(open ? 'is-open' : 'is-closed');
+  box.querySelector('.x-status__text').textContent = open ? 'Jetzt geöffnet' : 'Gerade geschlossen';
+  box.querySelectorAll('[data-days]').forEach(function (row) {
+    if (row.dataset.days.split(',').indexOf(String(day)) > -1) row.classList.add('is-today');
+  });
+})();
+
+/* Hero-Claim: Schrift verkleinern, bis er in seine Spalte passt (nichts wird angeschnitten) */
+(function () {
+  var h = document.querySelector('header.featured-full-width-img h1');
+  if (!h) return;
+  function fit() {
+    h.style.fontSize = '';
+    var box = h.parentElement.getBoundingClientRect();
+    var size = parseFloat(getComputedStyle(h).fontSize);
+    var guard = 0;
+    while (guard++ < 40 && size > 22) {
+      var r = document.createRange(); r.selectNodeContents(h);
+      var right = Math.max.apply(null, [].map.call(r.getClientRects(), function (x) { return x.right; }));
+      var limit = Math.min(box.right, document.documentElement.clientWidth) - 16;
+      if (right <= limit && h.scrollWidth <= h.clientWidth + 1) break;
+      size -= 2; h.style.fontSize = size + 'px';
+    }
+  }
+  fit();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fit);
+  var t; window.addEventListener('resize', function () { clearTimeout(t); t = setTimeout(fit, 120); });
+})();
+
+/* Überschriften im Inhalt: Schrift minimal verkleinern, falls ein gebundenes Wortpaar sonst überläuft */
+(function () {
+  var sel = 'main h1, main h2, main h3, .x-display, .x-h2, .nxm-teaser__title, .x-job__title, .x-tile__value';
+  function fitAll() {
+    document.querySelectorAll(sel).forEach(function (h) {
+      if (h.closest('header.featured-full-width-img')) return;
+      h.style.fontSize = '';
+      var size = parseFloat(getComputedStyle(h).fontSize), min = size * 0.7, guard = 0;
+      while (guard++ < 30 && size > min && h.scrollWidth > h.clientWidth + 1) {
+        size -= 1; h.style.fontSize = size + 'px';
+      }
+    });
+  }
+  fitAll();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitAll);
+  var t; window.addEventListener('resize', function () { clearTimeout(t); t = setTimeout(fitAll, 150); });
 })();

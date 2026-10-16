@@ -14,12 +14,19 @@ Vorschau: https://nxm-dw.github.io/erdel-metallbau-vorschau/
   4. `umbrueche.py` – letzte zwei Wörter zusammenhalten
   5. `saubere_links.py` – Links ohne `index.html`
   6. `bilder.py` – Stockfotos durch Archivfotos ersetzen, Teaser „+ mehr“
+  7. `seiten.py` – neuer Inhalt für Kontakt, Jobs, Historie, Stellenseite (Texte vom Kunden)
+  8. `abschluss.py` – Abschlussband auf Referenzen, Leistungen, Hörmann
+  9. `paare_loesen.py` – zu lange Wortpaare lösen (nach `umbrueche.py` laufen lassen)
+
+Prüfskripte (Playwright, im Scratchpad entwickelt): Anschnitt, zerrissene Wörter, Einzelwort-Umbrüche, Kontrast.
 
 Kundenwunsch Hero: Bild vollflächig, Rufnummer + Menü + Logo rechts, Claim linksbündig im rechten Drittel unten (wie alte Seite).
 
 Nach Änderungen CSS/JS-Version (`?v=`) in allen Seiten hochzählen.
 
 ## Offen (vom Kunden zu liefern)
+- Stellenbeschreibung Kalkulator/Metallbauer (bisher Lorem ipsum), echte Teamfotos für Jobs
+- Beide Stellen verlinken auf dieselbe Detailseite
 Gelb markierte Stellen im Impressum: Funktion von Marc Erdel, Registergericht, HRB-Nummer, USt-IdNr., zuständige Handwerkskammer.
 
 ## Hinweis
