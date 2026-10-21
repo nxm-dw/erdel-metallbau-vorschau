@@ -117,14 +117,74 @@ BENEFITS = """
     </ul>"""
 
 
+def bewerbung_block(form, stellen_link):
+    """Formularblock der Bewerbung (Seitenleiste + Forminator-Formular), auf Jobs- und Bewerbungsseite gleich."""
+    return f"""
+<section class="x-section x-formsec x-section--flush" id="bewerbung">
+  <div class="x-wrap x-formgrid">
+    <aside class="x-formside">
+      <img src="{P}nxm/img/gelaender-edelstahl.jpg" alt="" loading="lazy">
+      <div class="x-formside__body">
+        <p class="x-eyebrow x-eyebrow--light">So geht's</p>
+        <h2>In drei&nbsp;Schritten</h2>
+        <ol class="x-steps">
+          <li><strong>Angaben eintragen</strong><span>Name, Telefon und&nbsp;E&#8209;Mail.</span></li>
+          <li><strong>Unterlagen hochladen</strong><span>Lebenslauf, gerne auch Zeugnisse oder&nbsp;Portfolio.</span></li>
+          <li><strong>Absenden</strong><span>Gerne mit ein paar Worten zu&nbsp;dir.</span></li>
+        </ol>
+        <p class="x-formside__hint">Lieber per E-Mail oder Post? Sende deine Bewerbung an <a href="mailto:{MAIL}">{MAIL}</a> oder an erdel metallbau, Auf der Herrnmauer 12, 65779 Kelkheim im Taunus. <a href="{stellen_link}">Zu den offenen&nbsp;Stellen</a></p>
+      </div>
+    </aside>
+    <div class="x-formcard">
+      <div class="x-formcard__head"><h2>Deine&nbsp;Bewerbung</h2><p class="x-formcard__req"><span aria-hidden="true">*</span> Pflichtfeld</p></div>
+      {form}
+    </div>
+  </div>
+</section>
+"""
+
+
+def bewerbungsformular_markup():
+    """Das Forminator-Bewerbungsformular aus der Bewerbungsseite (inkl. Datenschutz-Pflichtfeld)."""
+    t = open(os.path.join(ROOT, "bewerbungsformular/index.html"), encoding="utf-8").read()
+    s = t.find("<form"); e = t.find("</form>") + len("</form>")
+    return t[s:e]
+
+
+STELLEN = [
+    ("Kalkulator (m/w/d) im Metallbau", "Kalkulator (m/w/d) im&nbsp;Metallbau",
+     "Technische Beratung unter Berücksichtigung bautechnischer&nbsp;Anforderungen.", "wp-content/uploads/2022/07/arbeit.jpg"),
+    ("Fachkraft für Metallbau / Schlosser:in (m/w/d)", "Fachkraft für Metallbau / Schlosser:in&nbsp;(m/w/d)",
+     "Anfertigung technischer Zeichnungen und maschinelle Fertigung in unserer&nbsp;Werkstatt.", "wp-content/uploads/2022/07/welder-ga36fb2b9b_640.jpg"),
+]
+
+
 def jobs(t):
+    karten = "".join(f"""
+      <article class="x-job">
+        <a class="x-job__media" href="{P}kalkulator-job1/" tabindex="-1" aria-hidden="true"><img src="{P}{img}" alt="" loading="lazy"></a>
+        <div class="x-job__body">
+          <p class="x-job__tags"><span>m/w/d</span><span>Kelkheim im Taunus</span></p>
+          <h3 class="x-job__title"><a href="{P}kalkulator-job1/">{titel}</a></h3>
+          <p class="x-job__text">{text}</p>
+        </div>
+        <div class="x-job__actions">
+          <a class="nxm-btn nxm-btn--dark" href="#bewerbung" data-stelle="{name}">Jetzt bewerben {ARROW}</a>
+          <a class="x-job__go" href="{P}kalkulator-job1/">Details zur Stelle {ARROW}</a>
+        </div>
+      </article>""" for name, titel, text, img in STELLEN)
+    cta = BEWERBEN.replace(f'href="{P}bewerbungsformular/"', 'href="#bewerbung"')
     return f"""
 <section class="x-section x-intro">
   <div class="x-wrap x-split x-split--wide">
     <div>
       <p class="x-eyebrow">Karriere bei erdel</p>
       <h2 class="x-display">Handwerk mit Anspruch. Seit&nbsp;1925.</h2>
-      <p class="x-lead">Du hast Interesse an einer Tätigkeit bei erdel metallbau? Hier erhältst du einen Überblick über unsere offenen&nbsp;Stellen.</p>
+      <p class="x-lead">Du hast Interesse an einer Tätigkeit bei erdel metallbau? Hier findest du unsere offenen Stellen und kannst dich direkt&nbsp;bewerben.</p>
+      <div class="x-cta__actions x-intro__actions">
+        <a class="nxm-btn nxm-btn--dark" href="#bewerbung">Jetzt bewerben {ARROW}</a>
+        <a class="nxm-btn nxm-btn--outline" href="#stellen">Offene Stellen</a>
+      </div>
     </div>
     <dl class="x-facts">
       <div><dt>Gegründet</dt><dd>1925</dd></div>
@@ -134,28 +194,10 @@ def jobs(t):
   </div>
 </section>
 
-<section class="x-section x-section--tight">
+<section class="x-section x-section--tight" id="stellen">
   <div class="x-wrap">
     <p class="x-eyebrow">Offene Stellen</p>
-    <div class="x-jobs">
-      <a class="x-job" href="{P}kalkulator-job1/">
-        <img src="{P}wp-content/uploads/2022/07/arbeit.jpg" alt="" loading="lazy">
-        <span class="x-job__body">
-          <span class="x-job__tags"><span>m/w/d</span><span>Kelkheim im Taunus</span></span>
-          <span class="x-job__title">Kalkulator (m/w/d) im&nbsp;Metallbau</span>
-          <span class="x-job__text">Technische Beratung unter Berücksichtigung bautechnischer&nbsp;Anforderungen.</span>
-        </span>
-        <span class="x-job__go">Zur Stelle {ARROW}</span>
-      </a>
-      <a class="x-job" href="{P}kalkulator-job1/">
-        <img src="{P}wp-content/uploads/2022/07/welder-ga36fb2b9b_640.jpg" alt="" loading="lazy">
-        <span class="x-job__body">
-          <span class="x-job__tags"><span>m/w/d</span><span>Kelkheim im Taunus</span></span>
-          <span class="x-job__title">Fachkraft für Metallbau / Schlosser:in&nbsp;(m/w/d)</span>
-          <span class="x-job__text">Anfertigung technischer Zeichnungen und maschinelle Fertigung in unserer&nbsp;Werkstatt.</span>
-        </span>
-        <span class="x-job__go">Zur Stelle {ARROW}</span>
-      </a>
+    <div class="x-jobs">{karten}
     </div>
   </div>
 </section>
@@ -167,7 +209,8 @@ def jobs(t):
     {BENEFITS}
   </div>
 </section>
-{BEWERBEN}
+{cta}
+{bewerbung_block(bewerbungsformular_markup(), "#stellen")}
 """
 
 
@@ -180,6 +223,10 @@ def stelle(t):
     <p class="x-tags"><span>Vollzeit</span><span>Teilzeit</span><span>geringfügige Beschäftigung</span><span>Kelkheim im Taunus</span></p>
     <p class="x-lead"><mark class="nxm-todo">Stellenbeschreibung folgt: Auf der bisherigen Seite steht hier noch Blindtext. Bitte Aufgaben und Tätigkeiten vom Kunden&nbsp;liefern lassen.</mark></p>
     <p class="x-lead">Wenn du dir das vorstellen kannst, bewirb dich bei&nbsp;uns!</p>
+    <div class="x-cta__actions x-intro__actions">
+      <a class="nxm-btn nxm-btn--dark" href="{P}bewerbungsformular/?stelle=Metallbauer%20Konstruktionstechnik%20(m/w/d)">Jetzt bewerben {ARROW}</a>
+      <a class="nxm-btn nxm-btn--outline" href="{P}jobs/#stellen">Alle Stellen</a>
+    </div>
   </div>
 </section>
 
@@ -261,7 +308,7 @@ def historie(t):
   <div class="x-wrap x-cta__inner">
     <div>
       <p class="x-eyebrow x-eyebrow--light">Ihr Projekt</p>
-      <h2>Fast 100 Jahre Erfahrung für Ihr&nbsp;Unikat.</h2>
+      <h2>Über 100 Jahre Erfahrung für Ihr&nbsp;Unikat.</h2>
     </div>
     <div class="x-cta__actions">
       <a class="nxm-btn nxm-btn--light" href="{P}kontakt/">Projekt anfragen {ARROW}</a>
@@ -314,7 +361,6 @@ def konfig_for(rel):
       <p class="x-lead">{d['lead']}</p>
       <div class="x-cta__actions x-konf-actions">
         <a class="nxm-btn nxm-btn--dark" href="#anfrage">Anfrage starten {ARROW}</a>
-        <a class="nxm-btn nxm-btn--outline" href="https://www.hoermann.de/konfigurator/" target="_blank" rel="noopener">Hörmann&#8209;Konfigurator {I_EXT}</a>
       </div>
     </div>
     <figure class="x-konf-media"><img src="{P}{d['img']}" alt="Hörmann {d['art']} von erdel metallbau"><figcaption><strong>{d['sub']}</strong><span>{d['sub2']}</span></figcaption></figure>
@@ -326,7 +372,7 @@ def konfig_for(rel):
     <p class="x-lead x-lead--wide">{d['text']}</p>
     <ol class="x-steps3">
       <li><span class="x-steps3__no">01</span><strong>Unterlagen&nbsp;zusammenstellen</strong><span>Fotos, Maße und Wünsche, die Checkliste unten hilft&nbsp;dabei.</span></li>
-      <li><span class="x-steps3__no">02</span><strong>Anfrage senden</strong><span>Alles direkt im Formular hochladen, auch Ihre&nbsp;Hörmann&#8209;Konfiguration.</span></li>
+      <li><span class="x-steps3__no">02</span><strong>Anfrage senden</strong><span>Drei kurze Schritte: Projekt, Wünsche, Kontakt. Fotos laden Sie direkt mit&nbsp;hoch.</span></li>
       <li><span class="x-steps3__no">03</span><strong>{d['step3'][0]}</strong><span>{d['step3'][1]}</span></li>
     </ol>
   </div>
@@ -348,10 +394,6 @@ def konfig_for(rel):
         <strong>Zuschuss für Einbruchschutz</strong>
         <span>Mit dem KfW-Programm können Sie sich Zuschüsse für verschiedene Maßnahmen sichern, zum Beispiel für Türen mit RC2-Sicherheitsausstattung.</span>
         <span class="x-kfw__go">Infos zum Zuschuss (PDF) {ARROW}</span>
-      </a>
-      <a class="x-konfig" href="https://www.hoermann.de/konfigurator/" target="_blank" rel="noopener">
-        <span><strong>Online konfigurieren</strong><span>Stellen Sie Ihr Wunschmodell im Hörmann&#8209;Konfigurator zusammen und laden Sie die Konfiguration im Formular&nbsp;hoch.</span></span>
-        {I_EXT}
       </a>
     </div>
   </div>
@@ -393,28 +435,7 @@ def bewerbung(t):
     <p class="x-lead">Schick uns deine Unterlagen direkt über das Formular. Lebenslauf, Zeugnisse oder Portfolio kannst du als Datei&nbsp;hochladen.</p>
   </div>
 </section>
-
-<section class="x-section x-formsec x-section--flush" id="bewerbung">
-  <div class="x-wrap x-formgrid">
-    <aside class="x-formside">
-      <img src="{P}nxm/img/gelaender-edelstahl.jpg" alt="" loading="lazy">
-      <div class="x-formside__body">
-        <p class="x-eyebrow x-eyebrow--light">So geht's</p>
-        <h2>In drei&nbsp;Schritten</h2>
-        <ol class="x-steps">
-          <li><strong>Angaben eintragen</strong><span>Name, Telefon und&nbsp;E&#8209;Mail.</span></li>
-          <li><strong>Unterlagen hochladen</strong><span>Anschreiben, Lebenslauf und weitere&nbsp;Dokumente.</span></li>
-          <li><strong>Absenden</strong><span>Gerne mit ein paar Worten zu&nbsp;dir.</span></li>
-        </ol>
-        <p class="x-formside__hint">Lieber per E-Mail oder Post? Sende deine Bewerbung an <a href="mailto:{MAIL}">{MAIL}</a> oder an erdel metallbau, Auf der Herrnmauer 12, 65779 Kelkheim im Taunus. <a href="{P}jobs/">Zu den offenen&nbsp;Stellen</a></p>
-      </div>
-    </aside>
-    <div class="x-formcard">
-      <div class="x-formcard__head"><h2>Deine&nbsp;Bewerbung</h2><p class="x-formcard__req"><span aria-hidden="true">*</span> Pflichtfeld</p></div>
-      {form}
-    </div>
-  </div>
-</section>
+{bewerbung_block(form, P + "jobs/#stellen")}
 """
 
 

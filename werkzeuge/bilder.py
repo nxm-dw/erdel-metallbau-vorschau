@@ -50,3 +50,65 @@ def startseite(t):
 
 
 edit("index.html", startseite)
+
+
+# --- Kundenfotos vom 21.10.2026 (Ordner „erdel Metallbau“ in OneDrive, importiert nach nxm/img/) ---
+# Leistungen-Karten: Briefkästen, Treppen & Geländer, Weitere Metallbauarbeiten, Möbelbau auf neue Fotos
+SWAP2 = {
+    "leistungen/index.html": [
+        ("nxm/img/briefkasten.jpg", "nxm/img/briefkasten-gold.jpg"),
+        ("nxm/img/treppe-glas.jpg", "nxm/img/treppe-eiche-glas.jpg"),
+        ("nxm/img/gelaender-edelstahl.jpg", "nxm/img/villa-balkon.jpg"),
+        ("nxm/img/moebel-tisch.jpg", "nxm/img/moebel-schreibtisch.jpg"),
+    ],
+}
+for rel, pairs in SWAP2.items():
+    pre = "../" * rel.count("/")
+    def f(t, pairs=pairs, pre=pre):
+        for a, b in pairs:
+            t = t.replace(pre + a, pre + b)
+        return t
+    edit(rel, f)
+
+# Referenzen-Galerie: neue Fotos vorn einfügen (Reihenfolge nach Themen), vorhandene bleiben dahinter
+GALERIE_NEU = [
+    ("tor-schwarz-villa.jpg", "Zweiflügeliges Einfahrtstor in Schwarz vor weißer Villa"),
+    ("zaun-gold-lamellen.jpg", "Lamellenzaun mit Tor und Briefkastenanlage in Gold"),
+    ("eingangstor-anthrazit.jpg", "Eingangstor in Anthrazit mit Sprechanlage und Briefschlitz"),
+    ("briefkasten-gold.jpg", "Briefkastenanlage in Gold mit Hausnummer"),
+    ("kubus-gold.jpg", "Kubus in Gold mit Briefkasten und Hausnummer, Seitenansicht"),
+    ("treppe-eiche-glas.jpg", "Kragarmtreppe aus Eiche mit Ganzglasgeländer"),
+    ("treppe-glasgelaender.jpg", "Treppenhaus mit rahmenlosem Glasgeländer"),
+    ("treppenauge-spiegel.jpg", "Blick ins Treppenauge mit Edelstahlgeländer"),
+    ("treppe-glas-beige.jpg", "Steintreppe mit Ganzglasgeländer"),
+    ("villa-balkon.jpg", "Stahlbalkon mit Vordach und Außentreppe an einer Jugendstilvilla"),
+    ("balkon-glas.jpg", "Balkongeländer aus Glas mit Stahlrahmen"),
+    ("balkone-stahl.jpg", "Vorgestellte Stahlbalkone an einem Mehrfamilienhaus"),
+    ("terrassendach-lamellen.jpg", "Terrassenüberdachung mit Lamellen"),
+    ("fassade-lamellen.jpg", "Fassade mit vertikalen Metalllamellen"),
+    ("muelltonnenbox-anthrazit.jpg", "Mülltonnenboxen in Anthrazit"),
+    ("muelltonnenbox-grau.jpg", "Sichtschutz und Mülltonnenboxen in Grau"),
+    ("moebel-schreibtisch.jpg", "Schreibtisch aus Stahl und Nussbaum"),
+    ("regal-stahl.jpg", "Regal aus schwarzem Stahl"),
+]
+
+
+def galerie(t):
+    item = ('            <div class="col-12 col-sm-4 portfolio-item">\n'
+            '                    <div class="gallery-image-container">\n'
+            '                            <a href="./#" class="fl-gallery">\n'
+            '                                <img decoding="async" class="img-fluid" src="../nxm/img/%s" alt="%s" loading="lazy" />\n'
+            '                            </a>\n'
+            '                    </div>\n'
+            '                </div>\n')
+    neu = "".join(item % (f, alt) for f, alt in GALERIE_NEU if "nxm/img/" + f not in t)
+    if not neu:
+        return t
+    anker = '</h2>\n                </div>\n'
+    i = t.find(anker, t.find('gallery-heading'))
+    assert i > 0, "Galerie-Überschrift nicht gefunden"
+    i += len(anker)
+    return t[:i] + neu + t[i:]
+
+
+edit("referenzen/index.html", galerie)
