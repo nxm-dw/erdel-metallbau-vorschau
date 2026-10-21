@@ -1033,3 +1033,21 @@ body.nxm-nohero:has(.x-intro) #content{padding-top:var(--nxm-head-h)}
 .x-formcard__stelle{flex-basis:100%;order:-1;margin:0 0 6px;font-size:13px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--nxm-accent)}
 .x-formcard__stelle:empty{display:none}
 @media (max-width:767.98px){.x-job__actions{flex-direction:row;flex-wrap:wrap;align-items:center;justify-content:space-between}}
+
+/* Referenzen-Galerie: einheitliche Kacheln 7:8 wie die Bestandsbilder, Bildausschnitt je Foto */
+.gallery-image-container img{width:100%;aspect-ratio:7/8;object-fit:cover}
+.gallery-image-container img[src$="muelltonnenbox-grau.jpg"]{object-position:85% 50%}
+.gallery-image-container img[src$="balkone-stahl.jpg"]{object-position:72% 50%}
+.gallery-image-container img[src$="eingangstor-anthrazit.jpg"]{object-position:58% 50%}
+.gallery-image-container img[src$="zaun-gold-lamellen.jpg"]{object-position:55% 55%}
+.gallery-image-container img[src$="fassade-lamellen.jpg"]{object-position:70% 50%}
+.gallery-image-container img[src$="moebel-schreibtisch.jpg"]{object-position:62% 50%}
+.gallery-image-container img[src$="tor-schwarz-villa.jpg"]{object-position:45% 60%}
+.gallery-image-container img[src$="villa-balkon.jpg"]{object-position:50% 60%}
+.gallery-image-container img[src$="briefkasten-gold.jpg"]{object-position:50% 70%}
+.gallery-image-container img[src$="terrassendach-lamellen.jpg"]{object-position:50% 45%}
+/* Leistungen-Karten (16:10): Ausschnitt der Hochformate */
+.two-col-section .image-container img[src$="briefkasten-gold.jpg"]{object-position:50% 72%}
+.two-col-section .image-container img[src$="treppe-eiche-glas.jpg"]{object-position:50% 55%}
+.two-col-section .image-container img[src$="villa-balkon.jpg"]{object-position:50% 62%}
+.two-col-section .image-container img[src$="moebel-schreibtisch.jpg"]{object-position:60% 50%}

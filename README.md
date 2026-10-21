@@ -27,7 +27,7 @@ Kundenwunsch Hero: Bild vollflächig, Rufnummer + Menü + Logo rechts, Claim lin
 Nach Änderungen CSS/JS-Version (`?v=`) in allen Seiten hochzählen.
 
 ## Offen (vom Kunden zu liefern)
-- Leistungen: Bild „Briefkästen“ (`nxm/img/briefkasten.jpg`, Stele 43 b) gegen neues Foto tauschen, Bilder folgen vom Kunden (Stand 21.10.2026)
+- Kundenfotos vom 21.10.2026 (18 Stück aus dem OneDrive-Ordner „erdel Metallbau“) sind in `nxm/img/` importiert (max. 1800 px, `bilder.py` Abschnitt SWAP2/GALERIE_NEU): Leistungen-Karten Briefkästen (`briefkasten-gold.jpg`, ersetzt Stele 43 b), Treppen & Geländer (`treppe-eiche-glas.jpg`), Weitere Metallbauarbeiten (`villa-balkon.jpg`), Möbelbau (`moebel-schreibtisch.jpg`); alle 18 zusätzlich vorn in der Referenzen-Galerie (jetzt 36 Kacheln, einheitlich 7:8 per CSS). Weitere 22 Fotos liegen noch unverwendet im OneDrive-Ordner.
 - Hörmann: alle Bilder der Seite tauschen (Kopfbild Garage mit Sektionaltor und die weiteren Fotos), neue Bilder folgen vom Kunden (Stand 21.10.2026)
 - Jobs: Stellenliste mit Direktbewerbung, Bewerbungsformular liegt jetzt auch auf der Jobs-Seite (`#bewerbung`), „Jetzt bewerben“ an einer Stelle trägt die Stelle oben ins Formular und in die Nachricht ein (`?stelle=` funktioniert auch auf der Bewerbungsseite). Echte Teamfotos und Stellentexte weiterhin vom Kunden
 - Stellenbeschreibung Kalkulator/Metallbauer (bisher Lorem ipsum), echte Teamfotos für Jobs
