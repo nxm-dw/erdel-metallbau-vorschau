@@ -152,33 +152,6 @@ if (window.jQuery && !jQuery.fn.offcanvas) { jQuery.fn.offcanvas = function () {
   var t; window.addEventListener('resize', function () { clearTimeout(t); t = setTimeout(fit, 150); });
 })();
 
-/* Kontaktformular: Themen-Chips setzen eine kurze Themenzeile ins Nachrichtenfeld */
-(function () {
-  var ta = document.querySelector('#forminator-module-691 textarea');
-  if (!ta) return;
-  var topics = ['Tor', 'Zaun', 'Geländer', 'Treppe', 'Briefkasten', 'Vordach', 'Möbel', 'Sonstiges'];
-  var box = document.createElement('div');
-  box.className = 'x-chips';
-  box.setAttribute('role', 'group');
-  box.setAttribute('aria-label', 'Thema wählen');
-  box.innerHTML = '<p class="x-chips__label">Worum geht es? (optional)</p>' + topics.map(function (t) {
-    return '<button type="button" class="x-chip" aria-pressed="false">' + t + '</button>';
-  }).join('');
-  ta.parentNode.insertBefore(box, ta);
-  var prefix = /^Thema: [^\n]*\n?/;
-  box.addEventListener('click', function (e) {
-    var b = e.target.closest('.x-chip');
-    if (!b) return;
-    var on = b.getAttribute('aria-pressed') !== 'true';
-    box.querySelectorAll('.x-chip').forEach(function (c) { c.setAttribute('aria-pressed', 'false'); });
-    var rest = ta.value.replace(prefix, '');
-    if (on) { b.setAttribute('aria-pressed', 'true'); ta.value = ('Thema: ' + b.textContent + '\n' + rest).slice(0, ta.maxLength > 0 ? ta.maxLength : 9999); }
-    else { ta.value = rest; }
-    ta.dispatchEvent(new Event('input', { bubbles: true }));
-    ta.dispatchEvent(new Event('keyup', { bubbles: true }));
-  });
-})();
-
 /* Scroll-Animationen: Elemente blenden beim Hereinscrollen weich ein; Zeitleiste füllt sich */
 (function () {
   if (!('IntersectionObserver' in window)) return;
@@ -238,3 +211,116 @@ document.addEventListener('change', function (e) {
   var err = e.target.closest('.forminator-field').querySelector('.nxm-consent__error');
   if (err) err.hidden = true; e.target.removeAttribute('aria-invalid');
 });
+
+/* Konfigurator-Anfrage: drei kurze Schritte, Prüfung je Schritt, Seitenleiste zeigt den Stand (Vorschau: kein Versand) */
+(function () {
+  document.querySelectorAll('form[data-nxm-wizard]').forEach(function (f) {
+    var steps = [].slice.call(f.querySelectorAll('.x-wiz__step')), cur = 0;
+    var bar = f.querySelector('.x-wiz__progress span'), count = f.querySelector('[data-wiz-count]');
+    var side = f.closest('.x-formgrid') ? f.closest('.x-formgrid').querySelector('.x-formside') : null;
+    var sideSteps = side ? [].slice.call(side.querySelectorAll('.x-steps li')) : [];
+    if (side) side.classList.add('x-wiz-side');
+
+    function show(i, scroll) {
+      cur = i;
+      steps.forEach(function (s, k) { s.hidden = k !== i; });
+      if (bar) bar.style.width = ((i + 1) / steps.length * 100) + '%';
+      if (count) count.textContent = 'Schritt ' + (i + 1) + ' von ' + steps.length;
+      sideSteps.forEach(function (li, k) { li.classList.toggle('is-current', k === i); li.classList.toggle('is-done', k < i); });
+      if (i === steps.length - 1) summary();
+      if (scroll) {
+        var top = f.getBoundingClientRect().top + window.scrollY - 120;
+        if (top < window.scrollY) window.scrollTo({ top: top, behavior: 'smooth' });
+      }
+    }
+    function valid(i) {
+      var s = steps[i], ok = true, names = {};
+      [].forEach.call(s.querySelectorAll('input[type=radio][required]'), function (r) { names[r.name] = true; });
+      Object.keys(names).forEach(function (n) {
+        var g = s.querySelector('[data-group="' + n + '"]'), bad = !f.querySelector('input[name="' + n + '"]:checked');
+        if (g) g.classList.toggle('is-invalid', bad);
+        if (bad) ok = false;
+      });
+      [].forEach.call(s.querySelectorAll('.x-field input[required], .x-field textarea[required]'), function (el) {
+        var bad = !el.checkValidity();
+        el.closest('.x-field').classList.toggle('is-invalid', bad);
+        if (bad) ok = false;
+      });
+      var err = s.querySelector('.x-wiz__error');
+      if (err) err.hidden = ok;
+      if (!ok) {
+        var first = s.querySelector('.is-invalid input, .x-field.is-invalid input');
+        if (first) first.focus({ preventScroll: true });
+        var bad = s.querySelector('.is-invalid');
+        if (bad) bad.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+      return ok;
+    }
+    function summary() {
+      var el = f.querySelector('[data-wiz-summary]');
+      if (!el) return;
+      var parts = [];
+      ['produkt', 'situation'].forEach(function (n) { var r = f.querySelector('input[name="' + n + '"]:checked'); if (r) parts.push(r.value); });
+      el.textContent = parts.length ? 'Ihre Auswahl: ' + parts.join(' · ') : '';
+      el.hidden = !parts.length;
+    }
+    f.addEventListener('click', function (e) {
+      if (e.target.closest('[data-wiz-next]')) { if (valid(cur)) show(cur + 1, true); }
+      else if (e.target.closest('[data-wiz-prev]')) show(cur - 1, true);
+    });
+    f.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' && e.target.tagName === 'INPUT' && e.target.type !== 'checkbox' && cur < steps.length - 1) {
+        e.preventDefault(); if (valid(cur)) show(cur + 1, true);
+      }
+    });
+    f.addEventListener('change', function (e) {
+      var el = e.target, wrap = el.closest('.is-invalid');
+      if (wrap && (el.type === 'radio' || el.checkValidity())) wrap.classList.remove('is-invalid');
+      var err = steps[cur].querySelector('.x-wiz__error');
+      if (err && !steps[cur].querySelector('.is-invalid')) err.hidden = true;
+      if (el.type === 'file') {
+        var up = el.closest('.x-upload'), list = up.querySelector('[data-upload-list]');
+        list.textContent = [].map.call(el.files, function (x) { return x.name; }).join(', ');
+        up.classList.toggle('has-files', el.files.length > 0);
+      }
+    });
+    f.addEventListener('submit', function (e) {
+      e.preventDefault();
+      if (!valid(cur)) return;
+      steps.forEach(function (s) { s.hidden = true; });
+      var done = f.querySelector('.x-wiz__done');
+      if (done) { done.hidden = false; done.focus(); }
+      if (bar) bar.style.width = '100%';
+      if (count) count.textContent = 'Gesendet';
+      sideSteps.forEach(function (li) { li.classList.add('is-done'); li.classList.remove('is-current'); });
+    });
+    show(0, false);
+  });
+})();
+
+/* Bewerbung: „Jetzt bewerben“ an einer Stelle trägt die Stelle ins Formular ein (auch per ?stelle= in der Adresse) */
+(function () {
+  var form = document.querySelector('#bewerbung form');
+  if (!form) return;
+  var head = form.closest('.x-formcard') ? form.closest('.x-formcard').querySelector('.x-formcard__head') : null;
+  var ta = form.querySelector('textarea');
+  function setStelle(name) {
+    if (!name) return;
+    if (head) {
+      var tag = head.querySelector('.x-formcard__stelle');
+      if (!tag) { tag = document.createElement('p'); tag.className = 'x-formcard__stelle'; head.insertBefore(tag, head.firstChild); }
+      tag.textContent = 'Bewerbung als ' + name;
+    }
+    if (ta) {
+      var rest = ta.value.replace(/^Bewerbung als: [^\n]*\n?/, '');
+      ta.value = ('Bewerbung als: ' + name + '\n' + rest).slice(0, ta.maxLength > 0 ? ta.maxLength : 9999);
+      ta.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+  }
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest ? e.target.closest('a[data-stelle]') : null;
+    if (a) setStelle(a.getAttribute('data-stelle'));
+  }, true);
+  var q = new URLSearchParams(location.search).get('stelle');
+  if (q) setStelle(q);
+})();
