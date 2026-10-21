@@ -26,6 +26,8 @@ Kundenwunsch Hero: Bild vollflächig, Rufnummer + Menü + Logo rechts, Claim lin
 Nach Änderungen CSS/JS-Version (`?v=`) in allen Seiten hochzählen.
 
 ## Offen (vom Kunden zu liefern)
+- Leistungen: Bild „Briefkästen“ (`nxm/img/briefkasten.jpg`, Stele 43 b) gegen neues Foto tauschen, Bilder folgen vom Kunden (Stand 21.10.2026)
+- Hörmann: alle Bilder der Seite tauschen (Kopfbild Garage mit Sektionaltor und die weiteren Fotos), neue Bilder folgen vom Kunden (Stand 21.10.2026)
 - Stellenbeschreibung Kalkulator/Metallbauer (bisher Lorem ipsum), echte Teamfotos für Jobs
 - Beide Stellen verlinken auf dieselbe Detailseite
 Gelb markierte Stellen im Impressum: Funktion von Marc Erdel, Registergericht, HRB-Nummer, USt-IdNr., zuständige Handwerkskammer.

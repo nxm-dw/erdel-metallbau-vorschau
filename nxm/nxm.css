@@ -165,7 +165,8 @@ header.featured-full-width-img h1{width:auto;max-width:13ch;margin:0;color:#fff;
 .malu-1 .row{margin-top:clamp(10px,2vw,28px)!important}
 .teaser-block{max-height:none;overflow:hidden}
 .teaser-block>a{display:block;overflow:hidden}
-.teaser-block img{display:block;width:100%;height:clamp(260px,38vw,560px);object-fit:cover;transition:transform 1.2s var(--nxm-ease-out)}
+.teaser-block img{display:block;width:100%;height:clamp(260px,38vw,640px);object-fit:cover;transition:transform 1.2s var(--nxm-ease-out)}
+.teaser-block img[src$="weltkugel.jpg"]{object-position:50% 8%}
 .teaser-block:hover img{transform:scale(1.04)}
 .teaser-text h2{font-size:clamp(32px,3.2vw,52px);font-weight:300;letter-spacing:-.035em;line-height:1.05}
 .teaser-text .more-item{display:inline-flex;align-items:center;gap:10px;font-size:18px;font-weight:600;text-decoration:none;color:var(--nxm-ink);border-bottom:1px solid var(--nxm-ink);padding-bottom:4px}
