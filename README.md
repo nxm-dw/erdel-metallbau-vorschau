@@ -20,6 +20,7 @@ Vorschau: https://nxm-dw.github.io/erdel-metallbau-vorschau/
   8. `abschluss.py` – Abschlussband auf Referenzen, Leistungen, Hörmann
   9. `einwilligung.py` – Datenschutz-Pflichtfeld in allen Formularen (nach `seiten.py`)
   10. `paare_loesen.py` – zu lange Wortpaare lösen (nach `umbrueche.py` laufen lassen)
+  11. `kopfbilder.py` – Kopfbild je Seite festlegen, bricht bei Doppelungen ab (immer als letzter Schritt)
 
 Prüfskripte (Playwright, lokaler Server z. B. `python3 -m http.server 8010`):
 - `werkzeuge/pruefen.py [URL] [Seite …]` – Überlauf, angeschnittene Texte, einzelne Wörter in der letzten Zeile, JS-Fehler, 404 (6 Breiten)
