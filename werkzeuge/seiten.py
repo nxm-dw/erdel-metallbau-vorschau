@@ -25,9 +25,81 @@ HOURS = """<div class="x-hours" data-nxm-open>
 </div>"""
 
 
-def kontakt(t):
+# --- Schlanke Formulare -------------------------------------------------------------------------
+# Wunsch Okt. 2026: Kontakt- und Hörmann-Formulare deutlich kürzer. Die Formulare werden hier
+# neu aufgebaut (Forminator-Klassen für das Aussehen, Form-Kopf und versteckte Felder bleiben).
+# Zum Livegang die Felder in Forminator genauso anlegen (siehe README).
+
+def _f(fid, label, inp, req=False, full=False, hint=""):
+    star = ' <span class="forminator-required">*</span>' if req else ' <span class="x-opt">(optional)</span>'
+    cls = "forminator-col forminator-col-12 x-full" if full else "forminator-col forminator-col-6"
+    h = f'<span class="forminator-description x-hint">{hint}</span>' if hint else ""
+    return (f'<div id="{fid}" class="{cls}"><div class="forminator-field">'
+            f'<label for="f-{fid}" class="forminator-label">{label}{star}</label>{inp}{h}</div></div>')
+
+
+def _in(fid, typ="text", req=False, ac=""):
+    r = ' required aria-required="true"' if req else ""
+    a = f' autocomplete="{ac}"' if ac else ""
+    return f'<input type="{typ}" name="{fid}" id="f-{fid}" class="forminator-input"{a}{r} />'
+
+
+def _upload(fid, label, hint):
+    return (f'<div id="{fid}" class="forminator-col forminator-col-12 x-full"><div class="forminator-field">'
+            f'<span class="forminator-label" id="l-{fid}">{label} <span class="x-opt">(optional)</span></span>'
+            f'<div class="x-upload"><input type="file" name="{fid}[]" id="f-{fid}" class="x-upload__input" multiple '
+            f'accept=".jpg,.jpeg,.png,.heic,.webp,.pdf" aria-labelledby="l-{fid}">'
+            f'<label for="f-{fid}" class="x-upload__btn">Dateien auswählen</label>'
+            f'<span class="x-upload__name" aria-live="polite">{hint}</span></div></div></div>')
+
+
+CONSENT = ('<div class="forminator-row nxm-consent-row"><div id="nxm-consent" class="forminator-col forminator-col-12 x-full"><div class="forminator-field">'
+           '<label class="forminator-checkbox nxm-consent"><input type="checkbox" name="datenschutz" value="Ja" required data-nxm-consent>'
+           '<span class="forminator-checkbox-box" aria-hidden="true"></span><span class="forminator-checkbox-label">Ich habe die '
+           f'<a href="{P}datenschutzerklaerung/" target="_blank" rel="noopener">Datenschutzerklärung</a> gelesen und bin einverstanden, '
+           '{zweck} Widerruf jederzeit per E-Mail an <span class="nxm-nowrap">info@erdel-metallbau.de</span> möglich.&nbsp;<span class="forminator-required">*</span></span></label>'
+           '<p class="nxm-consent__error" role="alert" hidden>Bitte bestätigen Sie die Datenschutzerklärung, damit wir Ihre Anfrage bearbeiten&nbsp;dürfen.</p></div></div></div>')
+
+
+def _rebuild(t, rows, button, zweck="dass meine Angaben zur Bearbeitung meiner Anfrage verarbeitet werden."):
+    """Formular der Seite neu aufbauen: Kopf und versteckte Forminator-Felder bleiben, Felder werden ersetzt."""
     s = t.find("<form"); e = t.find("</form>") + len("</form>")
     form = t[s:e]
+    head = form[:form.find(">", form.find("data-uid")) + 1]
+    if "x-slim" not in head:
+        head = head.replace('class="forminator-ui ', 'class="forminator-ui x-slim ', 1)
+    if 'enctype' not in head:
+        head = head.replace('method="post"', 'method="post"\n\t\t\t\tenctype="multipart/form-data"', 1)
+    hidden = "".join(m for m in re.findall(r'<input type="hidden"[^>]*>', form) if 'referer_url' not in m)
+    body = ('<div class="forminator-response-message forminator-error" aria-hidden="true"></div>'
+            + "".join(f'<div class="forminator-row">{r}</div>' for r in rows)
+            + CONSENT.replace("{zweck}", zweck)
+            + f'<div class="forminator-row forminator-row-last"><div class="forminator-col x-full"><div class="forminator-field">'
+              f'<button class="forminator-button forminator-button-submit">{button}</button></div></div></div>')
+    return head + body + hidden + "</form>"
+
+
+def kontakt_form(t):
+    return _rebuild(t, [
+        _f("name-1", "Name", _in("name-1", req=True, ac="name"), req=True) + _f("email-1", "E-Mail", _in("email-1", "email", True, "email"), req=True),
+        _f("phone-1", "Telefon", _in("phone-1", "tel", ac="tel"), full=True, hint="Für einen kurzen Rückruf, wenn Sie das&nbsp;möchten."),
+        _f("textarea-1", "Ihr Anliegen", '<textarea name="textarea-1" id="f-textarea-1" class="forminator-textarea" rows="5" maxlength="1500"></textarea>', full=True),
+    ], "Nachricht senden")
+
+
+def konfig_form(t, art):
+    was = "Tor" if art == "Tore" else "Tür"
+    return _rebuild(t, [
+        _f("name-1", "Name", _in("name-1", req=True, ac="name"), req=True) + _f("phone-1", "Telefon", _in("phone-1", "tel", True, "tel"), req=True),
+        _f("email-1", "E-Mail", _in("email-1", "email", True, "email"), req=True) + _f("name-5", "PLZ und Ort", _in("name-5", req=True, ac="postal-code"), req=True),
+        _f("textarea-1", f"Ihre Wünsche zum {was}",
+           f'<textarea name="textarea-1" id="f-textarea-1" class="forminator-textarea" rows="4" maxlength="1500" placeholder="z.&nbsp;B. Maße, Farbe, Oberfläche oder&nbsp;Antrieb"></textarea>', full=True),
+        _upload("upload-1", "Fotos, Aufmaßblatt oder Konfiguration", "Mehrere Dateien möglich: JPG, PNG oder&nbsp;PDF"),
+    ], "Anfrage senden")
+
+
+def kontakt(t):
+    form = kontakt_form(t)
     return f"""
 <section class="x-section x-intro">
   <div class="x-wrap x-split">
@@ -79,7 +151,7 @@ def kontakt(t):
     <h2 class="x-h2">Unsere zuverlässigen&nbsp;Partner</h2>
     <div class="x-partners">
       <a class="x-partner" href="{P}hoermann/">
-        <img src="{P}wp-content/uploads/2022/10/garagentor-erdel-metallbau-hoermann-schwarz.jpg" alt="Hörmann-Garagentor" loading="lazy">
+        <img src="{P}nxm/img/garagentor-verkleidet-2.jpg" alt="Hörmann-Garagentor" loading="lazy">
         <span class="x-partner__body"><span class="x-partner__name">HÖRMANN Tore &amp;&nbsp;Türen</span><span class="x-partner__cta">Mehr erfahren {ARROW}</span></span>
       </a>
       <a class="x-partner" href="https://www.galabau-ferschke.de/" target="_blank" rel="noopener">
@@ -92,39 +164,100 @@ def kontakt(t):
 """
 
 
-BEWERBEN = f"""
-<section class="x-cta">
-  <img src="{P}nxm/img/gelaender-edelstahl.jpg" alt="" loading="lazy">
-  <div class="x-wrap x-cta__inner">
-    <div>
-      <p class="x-eyebrow x-eyebrow--light">Initiativbewerbung</p>
-      <h2>Nichts Passendes dabei? Wir freuen uns trotzdem auf&nbsp;dich.</h2>
-      <p>Sende uns deine digitale Bewerbung mit deinem Portfolio an <a href="mailto:{MAIL}">{MAIL}</a> oder per Post an erdel metallbau, Auf der Herrnmauer 12, 65779 Kelkheim im&nbsp;Taunus.</p>
-    </div>
-    <div class="x-cta__actions">
-      <a class="nxm-btn nxm-btn--light" href="{P}bewerbungsformular/">Jetzt bewerben {ARROW}</a>
-      <a class="nxm-btn nxm-btn--ghost" href="tel:{TEL}">{I_TEL} {TEL_TXT}</a>
-    </div>
-  </div>
-</section>
-"""
+# --- Karriere (Neugestaltung Okt. 2026) -------------------------------------------------------
+# Beispielstellen (vom Kunden noch abzustimmen), alles auf einer Seite: Stelle aufklappen,
+# „Auf diese Stelle bewerben“ springt direkt zur Kurzbewerbung unten. Kein Seitenwechsel.
+
+STELLEN = [
+    dict(id="metallbauer", kurz="Metallbauer:in", titel="Metallbauer:in Konstruktions&shy;technik&nbsp;(m/w/d)", tags=["Vollzeit", "ab sofort", "Werkstatt &amp; Montage"],
+         teaser="Du fertigst Treppen, Geländer und Tore in unserer Werkstatt und baust sie beim Kunden&nbsp;ein.",
+         aufgaben=["Fertigung von Treppen, Geländern, Toren und Zäunen nach&nbsp;Zeichnung", "Schweißen und Bearbeiten von Stahl, Edelstahl und&nbsp;Aluminium", "Montage bei unseren Kunden im Rhein-Main-Gebiet", "Pflege von Werkzeug und&nbsp;Maschinen"],
+         profil=["Ausbildung als Metallbauer:in oder&nbsp;Schlosser:in", "Erfahrung im Schweißen (MAG/WIG)", "Führerschein Klasse&nbsp;B", "Sorgfalt und Freude an schönen&nbsp;Details"]),
+    dict(id="kalkulator", kurz="Kalkulation und Projektleitung", titel="Kalkulator:in und Projekt&shy;leitung Metallbau&nbsp;(m/w/d)", tags=["Vollzeit", "ab sofort", "Büro &amp; Baustelle"],
+         teaser="Du berätst Bauherren, nimmst Maß und begleitest Projekte vom Angebot bis zur&nbsp;Montage.",
+         aufgaben=["Technische Beratung unter Berücksichtigung bautechnischer&nbsp;Anforderungen", "Aufmaß vor Ort und Abstimmung mit&nbsp;Architekten", "Kalkulation und Erstellung von&nbsp;Angeboten", "Planung und Begleitung bis zur&nbsp;Abnahme"],
+         profil=["Meister:in oder Techniker:in im Metallbau, alternativ&nbsp;Berufserfahrung", "Sicherer Umgang mit Zeichnungen, CAD von&nbsp;Vorteil", "Freude am Kontakt mit&nbsp;Kunden", "Strukturierte, selbstständige&nbsp;Arbeitsweise"]),
+    dict(id="monteur", kurz="Monteur:in Tore und Türen", titel="Monteur:in für Tore und Türen&nbsp;(m/w/d)", tags=["Vollzeit", "ab sofort", "Montage"],
+         teaser="Du montierst Hörmann-Garagentore, Haustüren und Antriebe und bist beim Kunden das Gesicht von&nbsp;erdel.",
+         aufgaben=["Montage von Garagentoren, Haustüren und&nbsp;Antrieben", "Wartung und Reparatur bei unseren&nbsp;Kunden", "Inbetriebnahme und Einweisung vor&nbsp;Ort", "Aufmaß für Folgeaufträge"],
+         profil=["Handwerkliche Ausbildung, z.&nbsp;B. Metallbau, Tischlerei oder&nbsp;Elektro", "Führerschein Klasse&nbsp;B", "Zuverlässigkeit und freundliches&nbsp;Auftreten", "Lust, Neues zu&nbsp;lernen"]),
+    dict(id="ausbildung", kurz="Ausbildung Metallbauer:in", titel="Ausbildung Metallbauer:in&nbsp;(m/w/d)", tags=["Ausbildung", "Start 1.&nbsp;August 2027", "3,5&nbsp;Jahre"],
+         teaser="Du lernst das Handwerk von Grund auf: vom ersten Schweißpunkt bis zur fertigen&nbsp;Treppe.",
+         aufgaben=["Schweißen, Biegen, Bohren und&nbsp;Montieren", "Technische Zeichnungen lesen und&nbsp;umsetzen", "Mitarbeit an echten Kundenprojekten", "Mit auf Montage im Team"],
+         profil=["Haupt- oder Realschulabschluss", "Spaß an Technik und&nbsp;Handwerk", "Teamgeist und&nbsp;Pünktlichkeit", "Gern vorher ein Praktikum bei&nbsp;uns"]),
+]
+
+I_PLUS = '<svg class="x-stelle__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5h2v14h-2z"/><path class="x-stelle__h" d="M5 11h14v2H5z"/></svg>'
+
+
+def _stelle(s):
+    li = lambda xs: "".join(f"<li>{x}</li>" for x in xs)
+    tags = "".join(f"<span>{x}</span>" for x in s["tags"])
+    return f"""
+      <details class="x-stelle" id="stelle-{s['id']}">
+        <summary>
+          <span class="x-stelle__head">
+            <span class="x-stelle__tags">{tags}</span>
+            <span class="x-stelle__title">{s['titel']}</span>
+            <span class="x-stelle__teaser">{s['teaser']}</span>
+          </span>
+          <span class="x-stelle__more"><span class="x-stelle__open">Details</span><span class="x-stelle__close">Schließen</span>{I_PLUS}</span>
+        </summary>
+        <div class="x-stelle__body">
+          <div><h3 class="x-h4">Deine Aufgaben</h3><ul class="x-check">{li(s['aufgaben'])}</ul></div>
+          <div><h3 class="x-h4">Das bringst du&nbsp;mit</h3><ul class="x-check">{li(s['profil'])}</ul></div>
+          <div class="x-stelle__go">
+            <p>Kein Anschreiben nötig. Name und Telefonnummer reichen, wir melden uns&nbsp;persönlich.</p>
+            <a class="nxm-btn nxm-btn--dark" href="#bewerben" data-stelle="{s['id']}">Auf diese Stelle bewerben {ARROW}</a>
+          </div>
+        </div>
+      </details>"""
+
 
 BENEFITS = """
-    <ul class="x-benefits">
-      <li><span class="x-benefits__no">01</span><strong>Ein starkes Team</strong><span>Ein tolles, bunt gemischtes Team, in dem man sich aufeinander verlassen&nbsp;kann.</span></li>
-      <li><span class="x-benefits__no">02</span><strong>Verantwortung</strong><span>Eine interessante, eigenverantwortliche Position mit Raum für eigene&nbsp;Ideen.</span></li>
-      <li><span class="x-benefits__no">03</span><strong>Abwechslung</strong><span>Abwechslungsreiche Projekte, bei denen du dich kreativ ausleben&nbsp;kannst.</span></li>
+    <ul class="x-benefits x-benefits--6">
+      <li><span class="x-benefits__no">01</span><strong>Familienbetrieb seit&nbsp;1925</strong><span>Vierte Generation, kurze Wege und ein offenes Ohr für deine&nbsp;Ideen.</span></li>
+      <li><span class="x-benefits__no">02</span><strong>Unikate statt&nbsp;Serie</strong><span>Treppen, Tore, Geländer und Möbel: Jedes Projekt ist&nbsp;anders.</span></li>
+      <li><span class="x-benefits__no">03</span><strong>Ein starkes&nbsp;Team</strong><span>Ein tolles, bunt gemischtes Team, in dem man sich aufeinander verlassen&nbsp;kann.</span></li>
+      <li><span class="x-benefits__no">04</span><strong>Verantwortung</strong><span>Eine eigenverantwortliche Position mit Raum für eigene&nbsp;Ideen.</span></li>
+      <li><span class="x-benefits__no">05</span><strong>Projekte in der&nbsp;Region</strong><span>Werkstatt in Kelkheim, Baustellen im Rhein-Main-Gebiet statt&nbsp;Fernmontage.</span></li>
+      <li><span class="x-benefits__no">06</span><strong>Hörmann-Fachbetrieb</strong><span>Tore, Türen und Antriebe vom Marktführer, fachgerecht&nbsp;montiert.</span></li>
     </ul>"""
+
+ARBEIT = [("treppe-holz-glas", "Freitragende Holztreppe mit&nbsp;Glasgeländer"), ("briefkasten-gold", "Briefkastenanlage in&nbsp;Messingoptik"),
+          ("tor-villa", "Einfahrtstor mit&nbsp;Pforte"), ("treppe-licht", "Treppenauge mit&nbsp;Glasbrüstung")]
+
+
+def bewerbung_form():
+    opts = "".join(f'<option value="{s["id"]}">{s["kurz"]}</option>' for s in STELLEN)
+    rows = [
+        _f("name-1", "Name", _in("name-1", req=True, ac="name"), req=True) + _f("phone-1", "Telefon", _in("phone-1", "tel", True, "tel"), req=True),
+        _f("email-1", "E-Mail", _in("email-1", "email", ac="email"))
+        + _f("select-1", "Stelle", f'<select name="select-1" id="f-select-1" class="forminator-select x-select">{opts}<option value="initiativ">Initiativbewerbung</option><option value="praktikum">Praktikum</option></select>'),
+        _upload("upload-1", "Lebenslauf oder Zeugnisse", "PDF oder Foto vom Handy, mehrere Dateien&nbsp;möglich"),
+    ]
+    body = ('<div class="forminator-response-message" aria-live="polite" hidden></div>'
+            + "".join(f'<div class="forminator-row">{r}</div>' for r in rows)
+            + CONSENT.replace("{zweck}", "dass meine Angaben zur Bearbeitung meiner Bewerbung verarbeitet werden.")
+            + '<div class="forminator-row forminator-row-last"><div class="forminator-col x-full"><div class="forminator-field">'
+              '<button class="forminator-button forminator-button-submit">Bewerbung absenden</button></div></div></div>')
+    return f'<form id="nxm-bewerbung" class="forminator-ui forminator-custom-form x-slim" method="post" enctype="multipart/form-data" data-nxm-preview>{body}</form>'
 
 
 def jobs(t):
+    stellen = "".join(_stelle(s) for s in STELLEN)
+    fotos = "".join(f'<figure class="x-strip__item"><img src="{P}nxm/img/galerie/{f}.jpg" alt="{a.replace("&nbsp;", " ")}" loading="lazy"><figcaption>{a}</figcaption></figure>' for f, a in ARBEIT)
     return f"""
 <section class="x-section x-intro">
   <div class="x-wrap x-split x-split--wide">
     <div>
       <p class="x-eyebrow">Karriere bei erdel</p>
       <h2 class="x-display">Handwerk mit Anspruch. Seit&nbsp;1925.</h2>
-      <p class="x-lead">Du hast Interesse an einer Tätigkeit bei erdel metallbau? Hier erhältst du einen Überblick über unsere offenen&nbsp;Stellen.</p>
+      <p class="x-lead">Wir suchen Menschen, die gern mit Metall arbeiten und stolz auf das Ergebnis sind. Bewerben dauert bei uns zwei Minuten, ein Anschreiben brauchen wir&nbsp;nicht.</p>
+      <div class="x-cta__actions x-konf-actions">
+        <a class="nxm-btn nxm-btn--dark" href="#bewerben">Jetzt bewerben {ARROW}</a>
+        <a class="nxm-btn nxm-btn--outline" href="#stellen">Offene Stellen</a>
+      </div>
     </div>
     <dl class="x-facts">
       <div><dt>Gegründet</dt><dd>1925</dd></div>
@@ -134,29 +267,28 @@ def jobs(t):
   </div>
 </section>
 
+<section class="x-section x-section--tight" id="stellen">
+  <div class="x-wrap">
+    <div class="x-stellen__head">
+      <div>
+        <p class="x-eyebrow">Offene Stellen</p>
+        <h2 class="x-h2">Finde deinen Platz im&nbsp;Team</h2>
+      </div>
+      <p class="x-stellen__note"><mark class="nxm-todo">Beispielstellen: Texte und Konditionen stimmt erdel noch&nbsp;ab.</mark></p>
+    </div>
+    <div class="x-stellen">{stellen}
+    </div>
+  </div>
+</section>
+
 <section class="x-section x-section--tight">
   <div class="x-wrap">
-    <p class="x-eyebrow">Offene Stellen</p>
-    <div class="x-jobs">
-      <a class="x-job" href="{P}kalkulator-job1/">
-        <img src="{P}wp-content/uploads/2022/07/arbeit.jpg" alt="" loading="lazy">
-        <span class="x-job__body">
-          <span class="x-job__tags"><span>m/w/d</span><span>Kelkheim im Taunus</span></span>
-          <span class="x-job__title">Kalkulator (m/w/d) im&nbsp;Metallbau</span>
-          <span class="x-job__text">Technische Beratung unter Berücksichtigung bautechnischer&nbsp;Anforderungen.</span>
-        </span>
-        <span class="x-job__go">Zur Stelle {ARROW}</span>
-      </a>
-      <a class="x-job" href="{P}kalkulator-job1/">
-        <img src="{P}wp-content/uploads/2022/07/welder-ga36fb2b9b_640.jpg" alt="" loading="lazy">
-        <span class="x-job__body">
-          <span class="x-job__tags"><span>m/w/d</span><span>Kelkheim im Taunus</span></span>
-          <span class="x-job__title">Fachkraft für Metallbau / Schlosser:in&nbsp;(m/w/d)</span>
-          <span class="x-job__text">Anfertigung technischer Zeichnungen und maschinelle Fertigung in unserer&nbsp;Werkstatt.</span>
-        </span>
-        <span class="x-job__go">Zur Stelle {ARROW}</span>
-      </a>
-    </div>
+    <p class="x-eyebrow">So einfach geht's</p>
+    <ol class="x-steps3">
+      <li><span class="x-steps3__no">01</span><strong>Kurz bewerben</strong><span>Name und Telefonnummer reichen. Lebenslauf gern, Anschreiben&nbsp;nicht.</span></li>
+      <li><span class="x-steps3__no">02</span><strong>Wir rufen dich an</strong><span>Persönlich und unkompliziert, damit wir uns kennenlernen&nbsp;können.</span></li>
+      <li><span class="x-steps3__no">03</span><strong>Werkstatt erleben</strong><span>Komm vorbei, lern das Team kennen und schau dir unsere Projekte&nbsp;an.</span></li>
+    </ol>
   </div>
 </section>
 
@@ -167,51 +299,68 @@ def jobs(t):
     {BENEFITS}
   </div>
 </section>
-{BEWERBEN}
+
+<section class="x-section">
+  <div class="x-wrap">
+    <p class="x-eyebrow">Daran arbeitest du</p>
+    <h2 class="x-h2">Projekte aus unserer&nbsp;Werkstatt</h2>
+    <div class="x-strip">{fotos}</div>
+    <p class="x-strip__more"><a href="{P}referenzen/">Alle Referenzen ansehen</a></p>
+  </div>
+</section>
+
+<section class="x-section x-formsec" id="bewerben">
+  <div class="x-wrap x-formgrid">
+    <aside class="x-formside">
+      <img src="{P}nxm/img/montage-transporter.jpg" alt="" loading="lazy">
+      <div class="x-formside__body">
+        <p class="x-eyebrow x-eyebrow--light">Kurzbewerbung</p>
+        <h2>In zwei Minuten&nbsp;beworben</h2>
+        <ol class="x-steps">
+          <li><strong>Name und Telefon</strong><span>Mehr brauchen wir für den ersten Schritt&nbsp;nicht.</span></li>
+          <li><strong>Lebenslauf anhängen</strong><span>Optional, ein Foto vom Handy&nbsp;genügt.</span></li>
+          <li><strong>Wir melden uns</strong><span>Persönlich, per Telefon oder&nbsp;E&#8209;Mail.</span></li>
+        </ol>
+        <div class="x-formside__alt">
+          <a class="nxm-btn nxm-btn--light" href="tel:{TEL}">{I_TEL} {TEL_TXT}</a>
+          <a class="nxm-btn nxm-btn--ghost" href="{WA}" target="_blank" rel="noopener">{I_WA} WhatsApp</a>
+        </div>
+        <p class="x-formside__hint">Lieber per E-Mail oder Post? Sende deine Bewerbung an <a href="mailto:{MAIL}">{MAIL}</a> oder an erdel metallbau, Auf der Herrnmauer 12, 65779 Kelkheim im&nbsp;Taunus.</p>
+      </div>
+    </aside>
+    <div class="x-formcard">
+      <div class="x-formcard__head"><h2>Deine Kurz&shy;bewerbung</h2><p class="x-formcard__req"><span aria-hidden="true">*</span> Pflichtfeld</p></div>
+      {bewerbung_form()}
+    </div>
+  </div>
+</section>
 """
 
 
-def stelle(t):
-    return f"""
-<section class="x-section x-intro">
-  <div class="x-wrap">
-    <p class="x-eyebrow">Stellenangebot</p>
-    <h2 class="x-display x-display--md">Metallbauer, Fachrichtung Konstruktions&shy;technik&nbsp;(m/w/d)</h2>
-    <p class="x-tags"><span>Vollzeit</span><span>Teilzeit</span><span>geringfügige Beschäftigung</span><span>Kelkheim im Taunus</span></p>
-    <p class="x-lead"><mark class="nxm-todo">Stellenbeschreibung folgt: Auf der bisherigen Seite steht hier noch Blindtext. Bitte Aufgaben und Tätigkeiten vom Kunden&nbsp;liefern lassen.</mark></p>
-    <p class="x-lead">Wenn du dir das vorstellen kannst, bewirb dich bei&nbsp;uns!</p>
-  </div>
-</section>
-
-<section class="x-section x-section--stone">
-  <div class="x-wrap x-two">
-    <div>
-      <h2 class="x-h3">Das bringst du&nbsp;mit</h2>
-      <ul class="x-check">
-        <li>Abgeschlossene Berufsausbildung als Metallbauer/in</li>
-        <li>Gute Fachkenntnis</li>
-        <li>Freundliche Umgangsformen</li>
-        <li>Selbstständiges Arbeiten</li>
-      </ul>
-    </div>
-    <div>
-      <h2 class="x-h3">Das bieten wir&nbsp;dir</h2>
-      <ul class="x-check">
-        <li>Ein tolles, bunt gemischtes Team</li>
-        <li>Eine interessante, eigenverantwortliche Position</li>
-        <li>Abwechslungsreiche Projekte, bei denen du dich kreativ ausleben&nbsp;kannst</li>
-      </ul>
-    </div>
-  </div>
-</section>
-{BEWERBEN.replace("Nichts Passendes dabei? Wir freuen uns trotzdem auf&nbsp;dich.", "Wenn dein Herz gerade ein bisschen schneller schlägt, möchten wir von dir&nbsp;hören.").replace("Initiativbewerbung", "Bewerbung")}
+def weiterleitung(ziel, titel):
+    """Alte Unterseiten (Stellenseite, Bewerbungsformular) führen direkt in den neuen Karrierebereich."""
+    return f"""<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, follow">
+<title>{titel} &#8211; Erdel Metallbau</title>
+<link rel="canonical" href="{ziel}">
+<meta http-equiv="refresh" content="0; url={ziel}">
+<script>location.replace({ziel!r});</script>
+</head>
+<body style="font-family:Arial,sans-serif;padding:24px">
+<p>Weiter zu <a href="{ziel}">{titel}</a>.</p>
+</body>
+</html>
 """
 
 
 GEN = [
     ("1925", "1. Generation", "Gründung durch Clemens&nbsp;Erdel",
      "Im Jahr 1925 machte sich Clemens Erdel, gelernter Dreher, in einer kleinen Werkstatt in Kelkheim selbstständig. Kelkheim wurde immer mehr für seine Möbelindustrie bekannt. Für Schreinereien wurden im eigenen Betrieb Leimöfen, Band- und Tellerschleifmaschinen sowie Furnierpressen gebaut. Besonders die Furnierpressen aus eigener Herstellung waren, nicht nur in Kelkheim, bekannt und&nbsp;begehrt.",
-     "wp-content/uploads/2022/07/historie_1.jpg"),
+     None),   # kein historisches Foto vorhanden: Typo-Karte statt Stockfoto
     ("1960", "2. Generation", "Vom Maschinenbau zur&nbsp;Schlosserei",
      "Im Jahr 1960 übernahm Clemens Erdel Junior, gelernter Schlosser, die Firma Clemens Erdel &amp; Sohn. Durch die Industrialisierung im Maschinenbau wurde der Betrieb auf Schlosserarbeiten umgestellt. Im Jahr 1970 starb Clemens Erdel Junior an den Folgen einer Lungenentzündung, sein Vater folgte ihm drei Monate&nbsp;später.",
      "wp-content/uploads/2022/07/IMG_2525-scaled.jpg"),
@@ -230,7 +379,7 @@ GEN = [
 def historie(t):
     items = "".join(f"""
     <li class="x-tl__item">
-      <figure class="x-tl__media"><img src="{P}{img}" alt="{g}: {sub.replace('&nbsp;', ' ')}" loading="lazy"></figure>
+      {f'<figure class="x-tl__media"><img src="{P}{img}" alt="{g}: {sub.replace(chr(38) + "nbsp;", " ")}" loading="lazy"></figure>' if img else '<figure class="x-tl__media x-tl__media--typo"><small>Aus eigener Herstellung</small><span>Leimöfen</span><span>Band- und Teller&shy;schleif&shy;maschinen</span><span>Furnier&shy;pressen</span></figure>'}
       <div class="x-tl__text">
         <p class="x-tl__year">{y}</p>
         <p class="x-eyebrow">{g}</p>
@@ -282,16 +431,16 @@ KONFIG = {
     lead="Die langjährige Partnerschaft des Systemhauses HÖRMANN und erdel metallbau zeichnet sich durch Qualität, Zuverlässigkeit und Vertrauen aus. Unsere Kunden profitieren von individuellen Lösungen und einer unschlagbaren&nbsp;Produktqualität.",
     sub="Türen für innen &amp;&nbsp;außen", sub2="Hohe Sicherheitsansprüche und beste&nbsp;Wärmedämmwerte",
     text="Wenn Sie Ihren Hauseingang mit einer qualitativ hochwertigen und optisch ansprechenden Tür abrunden möchten, treffen Sie mit einer Hörmann-Eingangstür genau die richtige Wahl. Wir unterstützen Sie bei Ihrem&nbsp;Vorhaben.",
-    check=["Anschrift inkl. Telefonnummer und&nbsp;E&#8209;Mail&#8209;Adresse", "Zwei Fotos der bestehenden Haustür (innen und außen)", "Höhe und Breite", "Türvariante", "Gewünschtes Motiv bzw. gewünschte Farbe", "Bei Neubauten: Bauplan mit Maßen&nbsp;(optional)"],
+    check=["Zwei Fotos der bestehenden Haustür (innen und außen)", "Höhe und Breite", "Türvariante", "Gewünschtes Motiv bzw. gewünschte Farbe", "Bei Neubauten: Bauplan mit Maßen&nbsp;(optional)"],
     downloads=[("Katalog Aluminium-Haustüren", UP + "Katalog_Aluminium_Haustueren.pdf"), ("Hörmann-Vorzugsfarben", UP + "HOeRMANN_Vorzugsfarben.pdf"), ("Aufmaßblatt", UP + "Aufmassblatt.pdf")],
     kfw=UP + "KFW-Zuschuss-bei-RC2-Sicherheitsausstattung-1.pdf",
     step3=("Ihr Angebot", "Sobald alle Informationen vorliegen, erstellen wir Ihr individuelles&nbsp;Angebot.")),
   "konfiguration-tore/index.html": dict(
-    art="Tore", title="Qualitätsprodukte nach Ihren&nbsp;Vorstellungen", img="nxm/img/tor-anthrazit.jpg", hero=UP + "hoermann-tore-erdel-metallbau-garage.jpg", claim="Tore nach&nbsp;Maß",
+    art="Tore", title="Qualitätsprodukte nach Ihren&nbsp;Vorstellungen", img="nxm/img/tor-anthrazit.jpg", hero="nxm/img/garagentor-verkleidet-2.jpg", claim="Tore nach&nbsp;Maß",
     lead="Die langjährige Partnerschaft des Systemhauses HÖRMANN und erdel metallbau zeichnet sich durch Qualität, Zuverlässigkeit und Vertrauen aus. Unsere Kunden profitieren von individuellen Lösungen und einer unschlagbaren&nbsp;Produktqualität.",
     sub="Industrietore und&nbsp;Antriebe", sub2="Hier schwingt Qualität in schöner&nbsp;Optik",
     text="Alles spricht für das Original: Qualität und Sicherheit, Optik und Komfort und die ausgereifte Technik. In jedem Hörmann-Tor steckt die Erfahrung von über 50 Jahren Know-how im Bau von&nbsp;Garagentoren.",
-    check=["Anschrift inkl. Telefonnummer und&nbsp;E&#8209;Mail&#8209;Adresse", "Zwei Fotos der bestehenden Garage (innen und außen)", "Maße laut Aufmaßblatt", "Wunschfarbe: Standard ist Verkehrsweiß RAL 9016, weitere Hörmann-Vorzugsfarben im&nbsp;Download", "Größe der Sektionen und Wunsch der Oberfläche", "Ist ein Antrieb gewünscht?", "Bei Neubauten: Bauplan mit&nbsp;Maßen"],
+    check=["Zwei Fotos der bestehenden Garage (innen und außen)", "Maße laut Aufmaßblatt", "Wunschfarbe: Standard ist Verkehrsweiß RAL 9016, weitere Hörmann-Vorzugsfarben im&nbsp;Download", "Größe der Sektionen und Wunsch der Oberfläche", "Ist ein Antrieb gewünscht?", "Bei Neubauten: Bauplan mit&nbsp;Maßen"],
     downloads=[("Aufmaßblatt", UP + "Aufmassblatt.pdf"), ("Hörmann-Vorzugsfarben", UP + "HOeRMANN_Vorzugsfarben-1.pdf"), ("Größe der Sektionen", UP + "HOeRMANN-Sektionaltor-Sektionen.pdf"), ("Oberflächen", UP + "HOeRMANN-Oberflaechen.pdf")],
     kfw=UP + "KFW-Zuschuss-bei-RC2-Sicherheitsausstattung.pdf",
     step3=("Termin vor Ort &amp; Angebot", "Wir nehmen die genauen Aufmaße, beraten Sie persönlich und erstellen Ihr&nbsp;Angebot.")),
@@ -301,8 +450,7 @@ KONFIG = {
 def konfig_for(rel):
     d = KONFIG[rel]
     def fn(t):
-        s = t.find("<form"); e = t.find("</form>") + len("</form>")
-        form = t[s:e]
+        form = konfig_form(t, d["art"])
         checks = "".join(f"<li>{c}</li>" for c in d["check"])
         dls = "".join(f'<a class="x-dl" href="{P}{h}" target="_blank" rel="noopener">{I_PDF}<span class="x-dl__name">{n}</span><span class="x-dl__meta">PDF öffnen</span></a>' for n, h in d["downloads"])
         return f"""
@@ -336,8 +484,9 @@ def konfig_for(rel):
   <div class="x-wrap x-two x-two--konf">
     <div>
       <p class="x-eyebrow">Checkliste</p>
-      <h2 class="x-h3">Das brauchen wir von&nbsp;Ihnen</h2>
+      <h2 class="x-h3">Das hilft uns beim&nbsp;Angebot</h2>
       <ul class="x-check">{checks}</ul>
+      <p class="x-note">Nichts davon ist Pflicht. Was fehlt, klären wir beim Termin vor&nbsp;Ort.</p>
     </div>
     <div>
       <p class="x-eyebrow">Downloads</p>
@@ -365,11 +514,11 @@ def konfig_for(rel):
         <p class="x-eyebrow x-eyebrow--light">Anfrageformular</p>
         <h2>Ihre Anfrage für {d['art']}</h2>
         <ol class="x-steps">
-          <li><strong>Daten eintragen</strong><span>Name, Anschrift und&nbsp;Kontakt.</span></li>
-          <li><strong>Wünsche angeben</strong><span>Farbe, Maße und gewünschte&nbsp;Ausführung.</span></li>
-          <li><strong>Dateien hochladen</strong><span>Fotos, Aufmaßblatt oder&nbsp;Konfiguration.</span></li>
+          <li><strong>Kontakt angeben</strong><span>Name, Telefon, E&#8209;Mail und&nbsp;Ort.</span></li>
+          <li><strong>Wünsche beschreiben</strong><span>Ein paar Stichworte&nbsp;genügen.</span></li>
+          <li><strong>Fotos anhängen</strong><span>Wenn vorhanden, gern auch&nbsp;später.</span></li>
         </ol>
-        <p class="x-formside__hint">Erst wenn alle Informationen vorliegen, können wir ein passendes Angebot erstellen. Bei Rückfragen erreichen Sie uns unter <a href="tel:{TEL}">{TEL_TXT}</a>.</p>
+        <p class="x-formside__hint">Nicht alles zur Hand? Schicken Sie, was Sie haben. Den Rest klären wir beim Termin vor Ort oder unter <a href="tel:{TEL}">{TEL_TXT}</a>.</p>
       </div>
     </aside>
     <div class="x-formcard">
@@ -382,46 +531,16 @@ def konfig_for(rel):
     return fn
 
 
-def bewerbung(t):
-    s = t.find("<form"); e = t.find("</form>") + len("</form>")
-    form = t[s:e]
-    return f"""
-<section class="x-section x-intro x-intro--compact">
-  <div class="x-wrap">
-    <p class="x-eyebrow">Bewerbung</p>
-    <h1 class="x-display">Jetzt online&nbsp;bewerben</h1>
-    <p class="x-lead">Schick uns deine Unterlagen direkt über das Formular. Lebenslauf, Zeugnisse oder Portfolio kannst du als Datei&nbsp;hochladen.</p>
-  </div>
-</section>
+REDIRECT = {"kalkulator-job1/index.html": ("../jobs/#stelle-metallbauer", "Stelle Metallbauer:in"),
+            "bewerbungsformular/index.html": ("../jobs/#bewerben", "Bewerbung")}
 
-<section class="x-section x-formsec x-section--flush" id="bewerbung">
-  <div class="x-wrap x-formgrid">
-    <aside class="x-formside">
-      <img src="{P}nxm/img/gelaender-edelstahl.jpg" alt="" loading="lazy">
-      <div class="x-formside__body">
-        <p class="x-eyebrow x-eyebrow--light">So geht's</p>
-        <h2>In drei&nbsp;Schritten</h2>
-        <ol class="x-steps">
-          <li><strong>Angaben eintragen</strong><span>Name, Telefon und&nbsp;E&#8209;Mail.</span></li>
-          <li><strong>Unterlagen hochladen</strong><span>Anschreiben, Lebenslauf und weitere&nbsp;Dokumente.</span></li>
-          <li><strong>Absenden</strong><span>Gerne mit ein paar Worten zu&nbsp;dir.</span></li>
-        </ol>
-        <p class="x-formside__hint">Lieber per E-Mail oder Post? Sende deine Bewerbung an <a href="mailto:{MAIL}">{MAIL}</a> oder an erdel metallbau, Auf der Herrnmauer 12, 65779 Kelkheim im Taunus. <a href="{P}jobs/">Zu den offenen&nbsp;Stellen</a></p>
-      </div>
-    </aside>
-    <div class="x-formcard">
-      <div class="x-formcard__head"><h2>Deine&nbsp;Bewerbung</h2><p class="x-formcard__req"><span aria-hidden="true">*</span> Pflichtfeld</p></div>
-      {form}
-    </div>
-  </div>
-</section>
-"""
-
-
-PAGES = {"kontakt/index.html": kontakt, "jobs/index.html": jobs, "historie/index.html": historie, "kalkulator-job1/index.html": stelle,
+PAGES = {"kontakt/index.html": kontakt, "jobs/index.html": jobs, "historie/index.html": historie,
          "konfiguration-tueren/index.html": konfig_for("konfiguration-tueren/index.html"),
-         "konfiguration-tore/index.html": konfig_for("konfiguration-tore/index.html"),
-         "bewerbungsformular/index.html": bewerbung}
+         "konfiguration-tore/index.html": konfig_for("konfiguration-tore/index.html")}
+
+for rel, (ziel, titel) in REDIRECT.items():
+    open(os.path.join(ROOT, rel), "w", encoding="utf-8").write(weiterleitung(ziel, titel))
+    print("weiterleitung:", rel)
 
 for rel, fn in PAGES.items():
     p = os.path.join(ROOT, rel)

@@ -186,7 +186,7 @@ if (window.jQuery && !jQuery.fn.offcanvas) { jQuery.fn.offcanvas = function () {
   document.documentElement.classList.add('nxm-js');
   var groups = [
     ['.x-intro .x-wrap > *', 0.08], ['.x-tile', 0.07], ['.x-formgrid > *', 0.1], ['.x-partner', 0.1],
-    ['.x-job', 0.08], ['.x-benefits li', 0.1], ['.x-check li', 0.05], ['.x-cta__inner > *', 0.12],
+    ['.x-job', 0.08], ['.x-stelle', 0.06], ['.x-strip__item', 0.08], ['.x-benefits li', 0.1], ['.x-check li', 0.05], ['.x-cta__inner > *', 0.12],
     ['.x-tl__item', 0], ['.x-h2', 0], ['.x-section > .x-wrap > .x-eyebrow', 0],
     ['.malu-1 .row', 0], ['.two-col-section .row > *', 0.12], ['.hero-text', 0], ['.gallery-item', 0.04],
     ['.simple_content .content-width-50', 0], ['.member', 0.08]
@@ -237,4 +237,52 @@ document.addEventListener('change', function (e) {
   if (!e.target.matches || !e.target.matches('[data-nxm-consent]') || !e.target.checked) return;
   var err = e.target.closest('.forminator-field').querySelector('.nxm-consent__error');
   if (err) err.hidden = true; e.target.removeAttribute('aria-invalid');
+});
+
+/* Datei-Upload: gewählte Dateien anzeigen, Ziehen und Ablegen hervorheben */
+document.querySelectorAll('.x-upload').forEach(function (box) {
+  var input = box.querySelector('.x-upload__input'), out = box.querySelector('.x-upload__name');
+  if (!input || !out) return;
+  var empty = out.innerHTML;
+  input.addEventListener('change', function () {
+    var n = [].map.call(input.files, function (f) { return f.name; });
+    out.textContent = n.length ? n.join(', ') : '';
+    if (!n.length) out.innerHTML = empty;
+  });
+  ['dragenter', 'dragover'].forEach(function (ev) { box.addEventListener(ev, function () { box.classList.add('is-drag'); }); });
+  ['dragleave', 'drop'].forEach(function (ev) { box.addEventListener(ev, function () { box.classList.remove('is-drag'); }); });
+});
+
+/* Karriere: Stelle per Link öffnen, „Auf diese Stelle bewerben“ wählt sie im Formular vor */
+(function () {
+  var sel = document.getElementById('f-select-1');
+  function openFromHash() {
+    var d = location.hash && document.getElementById(location.hash.slice(1));
+    if (d && d.tagName === 'DETAILS') { d.open = true; }
+  }
+  openFromHash();
+  window.addEventListener('hashchange', openFromHash);
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest && e.target.closest('[data-stelle]');
+    if (!a || !sel) return;
+    sel.value = a.getAttribute('data-stelle');
+    var card = sel.closest('.x-formcard');
+    if (card && window.innerWidth < 992) { e.preventDefault(); e.stopPropagation(); card.scrollIntoView({ behavior: 'smooth' }); history.replaceState(null, '', '#bewerben'); }
+    var name = document.getElementById('f-name-1');
+    if (name) setTimeout(function () { name.focus({ preventScroll: true }); }, 600);
+  }, true);   // Capture: das Theme-Skript stoppt Klicks auf #-Links
+})();
+
+/* Vorschau: Formulare senden noch nicht, statt Fehlermeldung ein klarer Hinweis */
+document.addEventListener('submit', function (e) {
+  var f = e.target;
+  if (!f.matches || !f.matches('[data-nxm-preview]') || e.defaultPrevented) return;
+  e.preventDefault();
+  if (!f.reportValidity()) return;
+  var msg = f.querySelector('.forminator-response-message');
+  if (msg) {
+    msg.hidden = false; msg.classList.add('is-ok');
+    msg.textContent = 'Danke! In dieser Vorschau wird noch nichts versendet. Nach dem Livegang landet deine Bewerbung direkt bei erdel metallbau.';
+    msg.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
 });

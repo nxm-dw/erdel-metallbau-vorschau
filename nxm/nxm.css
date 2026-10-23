@@ -934,3 +934,93 @@ body.nxm-nohero:has(.x-intro) #content{padding-top:var(--nxm-head-h)}
 @media (min-width:992px){
   .x-formgrid .x-formside__body,.x-formgrid:not(.x-formgrid--konf) .x-formside__body{position:sticky!important;top:calc(var(--nxm-head-h) + 24px)!important}
 }
+
+/* ===== Runde Okt. 2026: schlanke Formulare, Karriere neu, echte Fotos ===== */
+/* Schlanke Formulare: zweispaltiges Raster, Reihen lösen sich auf */
+.x-formcard form.x-slim{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:clamp(20px,2.4vw,36px);row-gap:clamp(16px,1.8vw,24px)}
+.x-formcard form.x-slim>.forminator-row{display:contents!important}
+.x-formcard form.x-slim .forminator-col{min-width:0;order:0!important;grid-column:auto}
+.x-formcard form.x-slim .x-full,.x-formcard form.x-slim .forminator-response-message{grid-column:1/-1!important}
+.x-formcard form.x-slim .forminator-row-last>.forminator-col{order:0!important}
+.x-formcard form.x-slim #nxm-consent{order:0!important}
+@media (max-width:575.98px){.x-formcard form.x-slim{grid-template-columns:minmax(0,1fr)}}
+.x-opt{font-weight:400;letter-spacing:.06em;text-transform:none;color:#8a867e}
+.x-formcard .forminator-ui .x-hint{text-align:left!important;letter-spacing:.02em!important;font-size:13px!important}
+.x-formcard .forminator-ui .forminator-textarea::placeholder{color:#9a958c;font-weight:300}
+.x-formcard .forminator-ui select.x-select{width:100%!important;min-height:46px;border:0!important;border-bottom:1px solid #cfc9bd!important;background:transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23141414' stroke-width='1.5'/%3E%3C/svg%3E") no-repeat right 4px center/12px 8px!important;
+  -webkit-appearance:none;appearance:none;padding:8px 24px 8px 0!important;font:300 18px/1.4 var(--bs-body-font-family)!important;color:var(--nxm-ink)!important;border-radius:0;cursor:pointer}
+.x-formcard .forminator-ui select.x-select:focus{outline:0;border-bottom-color:var(--nxm-accent)!important;box-shadow:0 2px 0 var(--nxm-accent)}
+/* Datei-Upload ohne Plugin-Skript */
+.x-upload{position:relative;display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;padding:14px;margin-top:6px;border:1px dashed #b9b3a7;background:#fbfaf8;transition:border-color .2s,background-color .2s}
+.x-upload:hover,.x-upload:focus-within{border-color:var(--nxm-ink)}
+.x-upload.is-drag{border-color:var(--nxm-accent);background:#f6efe8}
+.x-upload__input{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden}
+.x-upload__btn{display:inline-flex;align-items:center;min-height:44px;padding:0 18px;background:var(--nxm-ink);color:#fff;font:600 13px/1 var(--bs-body-font-family);letter-spacing:.08em;cursor:pointer;transition:background-color .2s}
+.x-upload__btn:hover{background:var(--nxm-accent)}
+.x-upload__input:focus-visible+.x-upload__btn{outline:2px solid var(--nxm-accent);outline-offset:2px}
+.x-upload__name{flex:1 1 200px;min-width:0;font-size:14px;line-height:1.5;color:#6d6a64;overflow-wrap:anywhere}
+.x-note{margin:18px 0 0!important;font-size:16px!important;line-height:1.6;color:var(--nxm-muted)!important}
+.x-formside__alt{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 22px}
+.x-formside__alt .nxm-btn{flex:1 1 180px;justify-content:center}
+.x-formcard .forminator-response-message.is-ok{display:block!important;margin:0 0 8px;padding:16px 18px;background:#eef4ec;border-left:3px solid #3d7a3a;font-size:15px;line-height:1.6;color:#23421f}
+
+/* Karriere: Stellen als aufklappbare Karten */
+.x-stellen__head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 32px;margin-bottom:clamp(20px,3vw,36px)}
+.x-stellen__head .x-h2{margin:0}
+.x-stellen__note{margin:0;font-size:15px!important;max-width:38ch}
+.x-stellen{display:grid;gap:14px}
+.x-stelle{background:#fff;border:1px solid var(--nxm-line);transition:border-color .25s,box-shadow .25s}
+.x-stelle:hover{border-color:rgba(20,20,20,.3)}
+.x-stelle[open]{border-color:var(--nxm-ink);box-shadow:0 24px 60px rgba(0,0,0,.08)}
+.x-stelle summary{list-style:none;display:flex;align-items:center;gap:20px 32px;padding:clamp(20px,2.6vw,34px) clamp(20px,3vw,40px);cursor:pointer}
+.x-stelle summary::-webkit-details-marker{display:none}
+.x-stelle summary:focus-visible{outline:2px solid var(--nxm-accent);outline-offset:-2px}
+.x-stelle__head{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:8px}
+.x-stelle__tags{display:flex;flex-wrap:wrap;gap:6px}
+.x-stelle__tags span{font-size:12px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--nxm-accent);padding:4px 10px;border:1px solid rgba(152,94,52,.35)}
+.x-stelle__title{font-size:clamp(21px,2vw,28px);line-height:1.25;color:var(--nxm-ink);font-weight:400;overflow-wrap:break-word;hyphens:manual}
+.x-stelle__teaser{font-size:17px;line-height:1.55;color:var(--nxm-muted)}
+.x-stelle__more{flex:none;display:inline-flex;align-items:center;gap:12px;font-size:13px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--nxm-ink)}
+.x-stelle__icon{width:44px;height:44px;padding:11px;border:1px solid var(--nxm-ink);fill:currentColor;transition:background-color .25s,color .25s,transform .4s var(--nxm-ease-out)}
+.x-stelle summary:hover .x-stelle__icon{background:var(--nxm-ink);color:#fff}
+.x-stelle[open] .x-stelle__icon{transform:rotate(45deg);background:var(--nxm-ink);color:#fff}
+.x-stelle__close,.x-stelle[open] .x-stelle__open{display:none}
+.x-stelle[open] .x-stelle__close{display:inline}
+.x-stelle__body{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(24px,3vw,48px);padding:0 clamp(20px,3vw,40px) clamp(24px,3vw,40px);border-top:1px solid var(--nxm-line);padding-top:clamp(20px,2.6vw,32px)}
+.x-h4{font-size:15px!important;font-weight:700!important;letter-spacing:.12em;text-transform:uppercase;color:var(--nxm-ink);margin:0 0 6px!important}
+.x-stelle__body .x-check li{font-size:16px;padding:10px 0 10px 30px}
+.x-stelle__body .x-check li::before{top:17px}
+.x-stelle__go{background:var(--nxm-stone);padding:clamp(20px,2.4vw,32px);display:flex;flex-direction:column;justify-content:space-between;gap:20px}
+.x-stelle__go p{margin:0;font-size:17px!important;line-height:1.6;color:var(--nxm-ink)}
+.x-stelle__go .nxm-btn{justify-content:center}
+@media (max-width:991.98px){.x-stelle__body{grid-template-columns:1fr 1fr}.x-stelle__go{grid-column:1/-1}}
+@media (max-width:640px){.x-stelle summary{flex-wrap:wrap}.x-stelle__more{width:100%;justify-content:space-between}.x-stelle__body{grid-template-columns:1fr}}
+html.nxm-js .x-stelle.nxm-reveal{transition-delay:var(--d,0s)}
+.x-benefits--6{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media (max-width:991.98px){.x-benefits--6{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:640px){.x-benefits--6{grid-template-columns:1fr}}
+/* Fotostreifen echter Projekte */
+.x-strip{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(10px,1.4vw,20px)}
+@media (max-width:991.98px){.x-strip{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.x-strip__item{margin:0;position:relative;overflow:hidden;background:var(--nxm-ink)}
+.x-strip__item img{display:block;width:100%;aspect-ratio:7/8;object-fit:cover;transition:transform 1.2s var(--nxm-ease-out)}
+.x-strip__item:hover img{transform:scale(1.04)}
+.x-strip__item figcaption{position:absolute;inset:auto 0 0 0;padding:40px 16px 14px;background:linear-gradient(180deg,transparent,rgba(10,10,10,.82));color:#fff;font-size:15px;line-height:1.4}
+.x-strip__more{margin:clamp(18px,2vw,28px) 0 0!important;font-size:17px!important}
+/* Historie 1925: Typo-Karte statt Stockfoto (kein historisches Foto vorhanden) */
+.x-tl__media--typo{aspect-ratio:4/3;display:flex;flex-direction:column;justify-content:flex-end;gap:2px;padding:clamp(22px,3vw,44px);background:var(--nxm-ink);color:#fff}
+.x-tl__media--typo small{margin-bottom:auto;font-size:13px;letter-spacing:.16em;text-transform:uppercase;font-weight:700;color:var(--nxm-accent-light)}
+.x-tl__media--typo span{font-size:clamp(24px,2.6vw,38px);font-weight:300;line-height:1.2;color:#fff;overflow-wrap:break-word;hyphens:manual}
+.x-tl__media--typo span+span{padding-top:10px;margin-top:8px;border-top:1px solid rgba(255,255,255,.16)}
+/* Lesbarkeit Bildtexte (gemessen mit werkzeuge/kontrast.py) */
+.x-konf-media figcaption{padding-top:clamp(56px,7vw,96px);background:linear-gradient(0deg,rgba(10,10,10,.9) 0%,rgba(10,10,10,.78) 55%,rgba(10,10,10,0) 100%)}
+.x-konf-media figcaption span{color:#fff}
+.x-strip__item figcaption{padding-top:64px;background:linear-gradient(0deg,rgba(10,10,10,.9) 0%,rgba(10,10,10,.75) 55%,rgba(10,10,10,0) 100%)}
+/* Stellen: Plus wird beim Öffnen zum Minus (Kasten bleibt gerade) */
+.x-stelle[open] .x-stelle__icon{transform:none}
+.x-stelle__icon path:first-child{transform-origin:12px 12px;transition:transform .35s var(--nxm-ease-out)}
+.x-stelle[open] .x-stelle__icon path:first-child{transform:scaleY(0)}
+/* Absenden-Knöpfe einzeilig */
+.x-formcard .forminator-ui .forminator-button-submit{white-space:nowrap}
+@media (max-width:420px){.x-formcard .forminator-ui .forminator-button-submit{letter-spacing:.08em!important;padding:0 20px!important;gap:10px}}
+.x-formcard{scroll-margin-top:calc(var(--nxm-head-h) + 8px)}
