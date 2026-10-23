@@ -312,7 +312,7 @@ def jobs(t):
 <section class="x-section x-formsec" id="bewerben">
   <div class="x-wrap x-formgrid">
     <aside class="x-formside">
-      <img src="{P}nxm/img/montage-transporter.jpg" alt="" loading="lazy">
+      <img src="{P}nxm/img/spinde-gitter.jpg" alt="" loading="lazy">
       <div class="x-formside__body">
         <p class="x-eyebrow x-eyebrow--light">Kurzbewerbung</p>
         <h2>In zwei Minuten&nbsp;beworben</h2>
@@ -379,7 +379,7 @@ GEN = [
 def historie(t):
     items = "".join(f"""
     <li class="x-tl__item">
-      {f'<figure class="x-tl__media"><img src="{P}{img}" alt="{g}: {sub.replace(chr(38) + "nbsp;", " ")}" loading="lazy"></figure>' if img else '<figure class="x-tl__media x-tl__media--typo"><small>Aus eigener Herstellung</small><span>Leimöfen</span><span>Band- und Teller&shy;schleif&shy;maschinen</span><span>Furnier&shy;pressen</span></figure>'}
+      {f'<figure class="x-tl__media"><img src="{P}{img}" alt="{g}: {sub.replace(chr(38) + "nbsp;", " ")}" loading="lazy"></figure>' if img else '<figure class="x-tl__media x-tl__media--typo"><small>Aus eigener Herstellung</small><span>Leimöfen</span><span>Bandschleifmaschinen</span><span>Tellerschleifmaschinen</span><span>Furnier&shy;pressen</span></figure>'}
       <div class="x-tl__text">
         <p class="x-tl__year">{y}</p>
         <p class="x-eyebrow">{g}</p>
@@ -427,7 +427,7 @@ UP = "wp-content/uploads/2022/10/"
 
 KONFIG = {
   "konfiguration-tueren/index.html": dict(
-    art="Türen", title="Maßanfertigungen von&nbsp;Türen", img="nxm/img/eingang-holztuer.jpg", hero="nxm/img/eingang-anthrazit.jpg", claim="Türen nach&nbsp;Maß",
+    art="Türen", title="Maßanfertigungen von&nbsp;Türen", img="nxm/img/eingang-anthrazit.jpg", hero="nxm/img/eingang-holztuer.jpg", claim="Türen nach&nbsp;Maß",
     lead="Die langjährige Partnerschaft des Systemhauses HÖRMANN und erdel metallbau zeichnet sich durch Qualität, Zuverlässigkeit und Vertrauen aus. Unsere Kunden profitieren von individuellen Lösungen und einer unschlagbaren&nbsp;Produktqualität.",
     sub="Türen für innen &amp;&nbsp;außen", sub2="Hohe Sicherheitsansprüche und beste&nbsp;Wärmedämmwerte",
     text="Wenn Sie Ihren Hauseingang mit einer qualitativ hochwertigen und optisch ansprechenden Tür abrunden möchten, treffen Sie mit einer Hörmann-Eingangstür genau die richtige Wahl. Wir unterstützen Sie bei Ihrem&nbsp;Vorhaben.",

@@ -28,6 +28,9 @@ NEU = {
     "IMG_1081.jpeg": "treppe-glas-2",
 }
 
+# Kopfbilder im Querformat aus den Originalen (volle Schärfe): Original -> (Datei, Fokus y von 0 bis 1)
+HERO = {"ULIP0355.jpg": ("hero-treppe", 0.62), "Innengeländer 5.jpg": ("hero-treppenauge", 0.5)}
+
 # Pfad (relativ zum Repo) -> Rechtecke (x0, y0, x1, y1) als Anteil von Breite/Höhe
 BLUR = {
     "nxm/img/pforte-anthrazit.jpg": [(0.455, 0.425, 0.535, 0.555), (0.895, 0.405, 0.935, 0.535)],   # Klingel + „40“, Sprechanlage
@@ -80,6 +83,14 @@ if len(sys.argv) > 1:
             im = blur(im, BLUR[rel])
         save(im, os.path.join(ROOT, rel), rel in BLUR)
         print("foto:", rel, im.size)
+    for name, (slug, fy) in HERO.items():
+        im = ImageOps.exif_transpose(Image.open(os.path.join(src, name))).convert("RGB")
+        w, h = im.size
+        ch = round(w * 9 / 16)
+        y = round((h - ch) * fy)
+        im = im.crop((0, y, w, y + ch)).resize((2400, 1350), Image.LANCZOS)
+        save(im, os.path.join(IMG, slug + ".jpg"), False)
+        print("kopfbild:", slug)
 
 for rel, boxes in BLUR.items():
     p = os.path.join(ROOT, rel)
