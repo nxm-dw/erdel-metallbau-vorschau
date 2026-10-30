@@ -366,7 +366,7 @@ GEN = [
      "wp-content/uploads/2022/07/IMG_2525-scaled.jpg"),
     ("1970", "3. Generation", "Josefine und Helmuth&nbsp;Erdel",
      "Josefine Erdel, Frau von Clemens Erdel Junior, übernahm die Geschäftsführung der Schlosserei, um ihrem Sohn Helmuth den Gang zur Meisterschule zu ermöglichen. Die Regierung gestattete Josefine nur ein Jahr lang, den Metallbaubetrieb zu leiten. Im Jahr 1970 ging die Schlosserei Clemens Erdel &amp; Sohn traditionsgetreu in Helmuth Erdels Hände&nbsp;über.",
-     "wp-content/uploads/2022/07/Weldkugel.jpg"),
+     "nxm/img/historie-globus.jpg"),
     ("2001", "4. Generation", "Die erdel metallbau&nbsp;GmbH",
      "Im Jahr 2001 wurde aus der Firma Clemens Erdel &amp; Sohn die erdel metallbau GmbH. Seitdem übernahmen Helmuth Erdel und sein Sohn Marc Erdel, gelernter Schlosser, gemeinsam die&nbsp;Geschäftsführung.",
      "nxm/img/tor-anthrazit.jpg"),

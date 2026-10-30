@@ -49,19 +49,23 @@ TEXT = [
     ("Unikate statt&nbsp;Serie", "Maßarbeit statt&nbsp;Serie"),
 ]
 
-QUALI = """<!-- nxm:qualitaet -->
-    <div class="row px-3">
-        <div class="col-md-2 d-sm-none d-md-block"></div>
-        <div class="col-lg-9 col-sm-12">
-            <ul class="nxm-quali" aria-label="Das zeichnet uns aus">
-                <li><strong>Seit&nbsp;1925</strong><span>Über 100 Jahre Familienbetrieb in&nbsp;Kelkheim</span></li>
-                <li><strong>Meisterbetrieb</strong><span>Handwerk mit&nbsp;Meisterbrief</span></li>
-                <li><strong>TÜV-zertifiziert</strong><span>Unabhängig geprüfte&nbsp;Qualität</span></li>
-                <li><strong>DIN&nbsp;EN&nbsp;1090</strong><span>Tragende Bauteile nach Norm&nbsp;gefertigt</span></li>
-                <li><strong>3D-Werkplanung</strong><span>Jedes Projekt vorab im CAD&nbsp;konstruiert</span></li>
-            </ul>
-        </div>
+I = lambda d: f'<svg viewBox="0 0 24 24" aria-hidden="true">{d}</svg>'
+QUALI = f"""<!-- nxm:qualitaet -->
+<section class="nxm-quali" aria-label="Das zeichnet uns aus">
+  <div class="nxm-quali__inner">
+    <div class="nxm-quali__jahr">
+      <p class="nxm-quali__vor">Familienbetrieb seit</p>
+      <p class="nxm-quali__zahl">1925</p>
+      <p class="nxm-quali__text">Über 100 Jahre Metallbau in Kelkheim, heute in vierter&nbsp;Generation.</p>
     </div>
+    <ul class="nxm-quali__liste">
+      <li>{I('<circle cx="12" cy="9" r="6"/><path d="M8.6 13.9 7 22l5-2.8 5 2.8-1.6-8.1"/>')}<strong>Meisterbetrieb</strong><span>Handwerk mit&nbsp;Meisterbrief</span></li>
+      <li>{I('<path d="M12 3 4.5 6v5.6c0 4.4 3.2 8.2 7.5 9.4 4.3-1.2 7.5-5 7.5-9.4V6L12 3z"/><path d="m8.6 12.2 2.4 2.4 4.4-4.8"/>')}<strong>TÜV-zertifiziert</strong><span>Unabhängig geprüfte&nbsp;Qualität</span></li>
+      <li>{I('<path d="M4 4h16v3.2h-6.4v9.6H20V20H4v-3.2h6.4V7.2H4z"/>')}<strong>DIN&nbsp;EN&nbsp;1090</strong><span>Tragende Bauteile nach Norm&nbsp;gefertigt</span></li>
+      <li>{I('<path d="M12 3 4 7.5v9L12 21l8-4.5v-9L12 3z"/><path d="M4 7.5 12 12l8-4.5M12 12v9"/>')}<strong>3D-Werkplanung</strong><span>Jedes Projekt vorab im CAD&nbsp;konstruiert</span></li>
+    </ul>
+  </div>
+</section>
 <!-- /nxm:qualitaet -->"""
 
 # leere Textzeile unter dem Einleitungssatz der Startseite
@@ -90,10 +94,14 @@ for p in pages():
     n = s
     for a, b in TEXT:
         n = n.replace(a, b)
-    if os.path.relpath(p, ROOT) == "index.html" and "nxm:qualitaet" not in n:
-        n, k = LEER.subn(QUALI, n, count=1)
-        if not k:
+    if os.path.relpath(p, ROOT) == "index.html":
+        n = LEER.sub("", n, count=1)
+        # Band volle Breite: alte Fassung (im Textcontainer) entfernen, vor den Teasern einsetzen
+        n = re.sub(r"\s*<!-- nxm:qualitaet -->.*?<!-- /nxm:qualitaet -->", "", n, flags=re.S)
+        i = n.find('<div class="container-fluid gx-0 malu-1')
+        if i < 0:
             raise SystemExit("Startseite: Platz für die Qualitätsleiste nicht gefunden")
+        n = n[:i] + QUALI + "\n" + n[i:]
     # alle Formulare im Vorschau-Modus (kein Absenden an relaunch.erdel-metallbau.de)
     n = re.sub(r'<form(?![^>]*data-nxm-preview)(\s[^>]*forminator-ui[^>]*)>', r'<form\1 data-nxm-preview>', n)
     # keine Aufrufe an das alte WordPress: Nonce-Abfrage raus, Ajax-Adresse lokal (wird nie angefragt)

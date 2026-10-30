@@ -21,6 +21,7 @@ Vorschau: https://nxm-dw.github.io/erdel-metallbau-vorschau/
   9. `einwilligung.py` – Datenschutz-Pflichtfeld in allen Formularen (nach `seiten.py`)
   10. `paare_loesen.py` – zu lange Wortpaare lösen (nach `umbrueche.py` laufen lassen)
   10a. `kundenrunde_3010.py` – Kundenrunde 30.10.2026: weniger „Unikat“/„keine Grenzen“, Geschäftszeiten ab 7:00, Qualitätsleiste Startseite (seit 1925, Meisterbetrieb, TÜV, DIN EN 1090, 3D-Werkplanung), Kontakt-Leiste rechts (Desktop), alle Formulare im Vorschau-Modus ohne Aufruf an relaunch.erdel-metallbau.de
+  10b. `formulare.py` – Formulare auf `anfrage.php` umstellen, Honeypot, reCAPTCHA-Hinweis, Datenschutz-Abschnitt
   11. `kopfbilder.py` – Kopfbild je Seite festlegen, bricht bei Doppelungen ab (immer als letzter Schritt)
 
 Prüfskripte (Playwright, lokaler Server z. B. `python3 -m http.server 8010`):
@@ -37,16 +38,21 @@ Nach Änderungen CSS/JS-Version (`?v=`) in allen Seiten hochzählen.
 - Fotos von Team, Werkstatt und Fahrzeugen fehlen noch; Partnerbild Ferschke stammt vom Partner
 Gelb markierte Stellen im Impressum: Funktion von Marc Erdel, Registergericht, HRB-Nummer, USt-IdNr., zuständige Handwerkskammer.
 
+## Formulare (ohne WordPress)
+Live-Betrieb als statische Seite auf dem IONOS-Webspace (PHP 8). Alle Formulare (Kontakt, Hörmann Tore/Türen, Kurzbewerbung)
+gehen über `anfrage.php` per E-Mail an **info@erdel-metallbau.de**, Anhänge (JPG/PNG/HEIC/WEBP/PDF, max. 10 Dateien / 15 MB) hängen an der Mail.
+- Spamschutz: Google reCAPTCHA v3 (serverseitig geprüft, Mindestwert 0,5), Honeypot-Feld, Mindest-Ausfüllzeit 3 s, max. 5 Anfragen je IP in 10 Minuten.
+- reCAPTCHA wird erst geladen, wenn die Datenschutz-Einwilligung angehakt oder abgesendet wird; Badge ausgeblendet, Pflichthinweis unter dem Knopf, Abschnitt in der Datenschutzerklärung.
+- Zugangsdaten: `anfrage-config.php` (Vorlage `anfrage-config.example.php`) neben `anfrage.php` hochladen. **Nie ins Repo** (steht in `.gitignore`, Repo ist öffentlich). Websiteschlüssel steht in `werkzeuge/formulare.py`.
+- Vor dem Livegang: reCAPTCHA-Admin → Domains `erdel-metallbau.de` und `www.erdel-metallbau.de` eintragen.
+- **SPF:** Mails verschickt der IONOS-Server mit Absender `website@erdel-metallbau.de`. Der SPF-Eintrag erlaubt bisher nur Microsoft 365 (`-all`), sonst landen die Mails im Spam oder werden abgewiesen. TXT-Eintrag bei IONOS ändern auf:
+  `v=spf1 include:spf.protection.outlook.com include:_spf-eu.ionos.com -all`
+- In der Vorschau (github.io, localhost) wird nichts versendet, die Formulare zeigen nur einen Hinweis.
+- Test lokal: Kopie mit `'test' => true` in der Config, `php -S 127.0.0.1:8011`, Mail landet als `nxm-anfrage-test.eml` im Temp-Ordner.
+
 ## Hinweis
-Formulare senden in der Vorschau nicht ab (statische Seite, Abfang-Skript zeigt Hinweis; es geht auch nichts an das alte WordPress).
 Balkonfoto Altbauvilla (`balkon-altbau.jpg`) ist oberhalb der Vorhänge zugeschnitten (`CROP` in `fotos.py`); eine echte Retusche mit Vorhängen weg steht aus.
 
-## Hinweis Livegang (WordPress/Forminator)
-Empfänger aller Formular-Benachrichtigungen (Kontakt, Hörmann Tore/Türen, Kurzbewerbung): **info@erdel-metallbau.de** (Kundenwunsch 30.10.2026).
-Die Formulare sind in der Vorschau schlank neu aufgebaut. Beim Livegang in Forminator genauso anlegen
-(Datenschutz-Kästchen `name="datenschutz"` jeweils als echtes GDPR-/Checkbox-Pflichtfeld):
-- Kontakt (Formular 691): Name*, E-Mail*, Telefon, Anliegen (Themen-Chips setzen nur eine Zeile ins Textfeld), Datenschutz*
-- Hörmann Tore/Türen: Name*, Telefon*, E-Mail*, PLZ und Ort*, Wünsche (Textfeld), Datei-Upload mehrfach (JPG/PNG/HEIC/PDF), Datenschutz*
-  (entfallen: Produktauswahl, Firma/Privat, Vor-/Nachname getrennt, Straße, Hausnummer, Pflichtfelder Farbe/Sektionen/Oberfläche, drei Einzel-Uploads)
-- Kurzbewerbung auf `jobs/` (ersetzt Formular 700): Name*, Telefon*, E-Mail, Stelle (Auswahl), Lebenslauf-Upload mehrfach, Datenschutz*
-Danach `/kalkulator-job1/` und `/bewerbungsformular/` in WordPress per 301 auf `/jobs/#stelle-metallbauer` bzw. `/jobs/#bewerben` umleiten.
+## Hinweis Livegang
+Kein WordPress (Entscheidung 30.10.2026). Die Seite geht statisch auf den IONOS-Webspace, Formulare siehe oben.
+`/kalkulator-job1/` und `/bewerbungsformular/` per `.htaccess` 301 auf `/jobs/#stelle-metallbauer` bzw. `/jobs/#bewerben` umleiten.

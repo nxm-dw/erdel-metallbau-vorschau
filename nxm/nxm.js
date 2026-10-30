@@ -273,24 +273,78 @@ document.querySelectorAll('.x-upload').forEach(function (box) {
   }, true);   // Capture: das Theme-Skript stoppt Klicks auf #-Links
 })();
 
-/* Vorschau: Formulare senden noch nicht, statt Fehlermeldung ein klarer Hinweis.
-   Capture auf window: läuft vor dem Forminator-Skript, damit nichts an das alte WordPress geht.
-   Beim Livegang gehen alle Formulare an info@erdel-metallbau.de. */
-window.addEventListener('submit', function (e) {
-  var f = e.target;
-  if (!f.matches || !f.matches('[data-nxm-preview]') || e.defaultPrevented) return;
-  e.preventDefault(); e.stopImmediatePropagation();
-  if (!f.reportValidity()) return;
-  var msg = f.querySelector('.forminator-response-message');
-  if (msg) {
-    msg.hidden = false; msg.classList.add('is-ok'); msg.removeAttribute('aria-hidden');
-    msg.setAttribute('role', 'status');
-    msg.textContent = f.id === 'nxm-bewerbung'
-      ? 'Danke! In dieser Vorschau wird noch nichts versendet. Nach dem Livegang landet deine Bewerbung direkt bei info@erdel-metallbau.de.'
-      : 'Danke! In dieser Vorschau wird noch nichts versendet. Nach dem Livegang landet Ihre Anfrage direkt bei info@erdel-metallbau.de.';
+/* Formulare: Versand über /anfrage.php an info@erdel-metallbau.de, Spamschutz reCAPTCHA v3.
+   reCAPTCHA wird erst geladen, wenn das Datenschutz-Kästchen angehakt oder abgesendet wird.
+   In der Vorschau (github.io, localhost) wird nichts versendet, nur ein Hinweis gezeigt.
+   Capture auf window: läuft vor dem alten Forminator-Skript. */
+(function () {
+  var forms = document.querySelectorAll('form[data-nxm-form]');
+  if (!forms.length) return;
+  var preview = /github\.io$|^localhost$|^127\./.test(location.hostname);
+  var loading = null;
+  function captcha(key) {
+    if (!loading) loading = new Promise(function (ok, fail) {
+      var s = document.createElement('script');
+      s.src = 'https://www.google.com/recaptcha/api.js?render=' + encodeURIComponent(key);
+      s.async = true;
+      s.onload = function () { window.grecaptcha.ready(ok); };
+      s.onerror = function () { loading = null; fail(); };
+      document.head.appendChild(s);
+    });
+    return loading;
+  }
+  forms.forEach(function (f) {
+    var t = f.querySelector('[name="nxm_t"]');
+    if (t) t.value = Date.now();
+    var box = f.querySelector('[data-nxm-consent]');
+    if (box && !preview) box.addEventListener('change', function () { if (box.checked) captcha(f.dataset.sitekey).catch(function () {}); });
+  });
+  function zeige(f, ok, text) {
+    var msg = f.querySelector('.forminator-response-message');
+    if (!msg) return;
+    msg.hidden = false; msg.removeAttribute('aria-hidden'); msg.setAttribute('role', ok ? 'status' : 'alert');
+    msg.classList.toggle('is-ok', ok); msg.classList.toggle('is-error', !ok);
+    msg.textContent = text;
     msg.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
-}, true);
+  window.addEventListener('submit', function (e) {
+    var f = e.target;
+    if (!f.matches || !f.matches('form[data-nxm-form]') || e.defaultPrevented) return;
+    e.preventDefault(); e.stopImmediatePropagation();
+    if (!f.reportValidity()) return;
+    var du = f.dataset.nxmForm === 'bewerbung';
+    if (preview) {
+      zeige(f, true, 'Danke! In dieser Vorschau wird noch nichts versendet. Nach dem Livegang landet ' + (du ? 'deine Bewerbung' : 'Ihre Anfrage') + ' direkt bei info@erdel-metallbau.de.');
+      return;
+    }
+    var btn = f.querySelector('.forminator-button-submit'), label = btn ? btn.innerHTML : '';
+    if (btn) { btn.disabled = true; btn.textContent = 'Wird gesendet …'; }
+    function fertig() { if (btn) { btn.disabled = false; btn.innerHTML = label; } }
+    captcha(f.dataset.sitekey)
+      .then(function () { return window.grecaptcha.execute(f.dataset.sitekey, { action: 'anfrage' }); })
+      .then(function (token) {
+        var data = new FormData(f);
+        data.set('nxm_token', token);
+        return fetch(f.getAttribute('action') || '/anfrage.php', { method: 'POST', body: data });
+      })
+      .then(function (r) { return r.json().catch(function () { return { ok: false }; }); })
+      .then(function (r) {
+        fertig();
+        if (r.ok) {
+          f.reset();
+          var t = f.querySelector('[name="nxm_t"]'); if (t) t.value = Date.now();
+          f.querySelectorAll('.x-upload__input').forEach(function (i) { i.dispatchEvent(new Event('change')); });
+          zeige(f, true, du ? 'Danke für deine Bewerbung! Wir melden uns so schnell wie möglich bei dir.' : 'Vielen Dank! Ihre Anfrage ist bei uns angekommen. Wir melden uns so schnell wie möglich.');
+        } else {
+          zeige(f, false, r.error || 'Der Versand hat leider nicht geklappt. Bitte rufen Sie uns an: 06195 63192.');
+        }
+      })
+      .catch(function () {
+        fertig();
+        zeige(f, false, 'Der Versand hat leider nicht geklappt. Bitte rufen Sie uns an: 06195 63192.');
+      });
+  }, true);
+})();
 
 /* Kontakt-Leiste rechts: nach dem ersten Bildschirm einblenden, über dem Fuß ausblenden */
 (function () {
