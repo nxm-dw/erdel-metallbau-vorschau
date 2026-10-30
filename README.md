@@ -20,6 +20,7 @@ Vorschau: https://nxm-dw.github.io/erdel-metallbau-vorschau/
   8. `abschluss.py` – Abschlussband auf Referenzen, Leistungen, Hörmann
   9. `einwilligung.py` – Datenschutz-Pflichtfeld in allen Formularen (nach `seiten.py`)
   10. `paare_loesen.py` – zu lange Wortpaare lösen (nach `umbrueche.py` laufen lassen)
+  10a. `kundenrunde_3010.py` – Kundenrunde 30.10.2026: weniger „Unikat“/„keine Grenzen“, Geschäftszeiten ab 7:00, Qualitätsleiste Startseite (seit 1925, Meisterbetrieb, TÜV, DIN EN 1090, 3D-Werkplanung), Kontakt-Leiste rechts (Desktop), alle Formulare im Vorschau-Modus ohne Aufruf an relaunch.erdel-metallbau.de
   11. `kopfbilder.py` – Kopfbild je Seite festlegen, bricht bei Doppelungen ab (immer als letzter Schritt)
 
 Prüfskripte (Playwright, lokaler Server z. B. `python3 -m http.server 8010`):
@@ -37,9 +38,11 @@ Nach Änderungen CSS/JS-Version (`?v=`) in allen Seiten hochzählen.
 Gelb markierte Stellen im Impressum: Funktion von Marc Erdel, Registergericht, HRB-Nummer, USt-IdNr., zuständige Handwerkskammer.
 
 ## Hinweis
-Formulare senden in der Vorschau nicht ab (statische Seite, Abfang-Skript zeigt Hinweis).
+Formulare senden in der Vorschau nicht ab (statische Seite, Abfang-Skript zeigt Hinweis; es geht auch nichts an das alte WordPress).
+Balkonfoto Altbauvilla (`balkon-altbau.jpg`) ist oberhalb der Vorhänge zugeschnitten (`CROP` in `fotos.py`); eine echte Retusche mit Vorhängen weg steht aus.
 
 ## Hinweis Livegang (WordPress/Forminator)
+Empfänger aller Formular-Benachrichtigungen (Kontakt, Hörmann Tore/Türen, Kurzbewerbung): **info@erdel-metallbau.de** (Kundenwunsch 30.10.2026).
 Die Formulare sind in der Vorschau schlank neu aufgebaut. Beim Livegang in Forminator genauso anlegen
 (Datenschutz-Kästchen `name="datenschutz"` jeweils als echtes GDPR-/Checkbox-Pflichtfeld):
 - Kontakt (Formular 691): Name*, E-Mail*, Telefon, Anliegen (Themen-Chips setzen nur eine Zeile ins Textfeld), Datenschutz*

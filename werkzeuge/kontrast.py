@@ -47,7 +47,7 @@ with sync_playwright() as pw:
                 clip = {"x": max(0, info["x"]), "y": max(0, info["y"]), "width": min(info["w"], w - max(0, info["x"])), "height": info["h"]}
                 im = Image.open(io.BytesIO(pg.screenshot(clip=clip))).convert("RGB")
                 pg.evaluate(f"(i) => {{ const el = document.querySelectorAll({SEL!r})[i]; delete el.dataset.k; }}", i)
-                L = sorted(lum(p) for p in im.get_flattened_data())
+                L = sorted(lum(p) for p in (im.get_flattened_data() if hasattr(im, 'get_flattened_data') else im.getdata()))
                 fg = lum(info["c"])
                 hi = L[int(len(L) * 0.95)] if fg > 0.5 else L[int(len(L) * 0.05)]
                 mean = sum(L) / len(L)

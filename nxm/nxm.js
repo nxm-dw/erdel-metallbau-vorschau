@@ -88,7 +88,7 @@ if (window.jQuery && !jQuery.fn.offcanvas) { jQuery.fn.offcanvas = function () {
   } catch (e) { return; }
   var day = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'].indexOf(parts.weekday.replace('.', ''));
   var min = parseInt(parts.hour, 10) * 60 + parseInt(parts.minute, 10);
-  var open = (day >= 1 && day <= 4 && min >= 480 && min < 990) || (day === 5 && min >= 480 && min < 780);
+  var open = (day >= 1 && day <= 4 && min >= 420 && min < 990) || (day === 5 && min >= 420 && min < 780);   // Mo–Do 7:00–16:30, Fr 7:00–13:00
   box.classList.add(open ? 'is-open' : 'is-closed');
   box.querySelector('.x-status__text').textContent = open ? 'Jetzt geöffnet' : 'Gerade geschlossen';
   box.querySelectorAll('[data-days]').forEach(function (row) {
@@ -273,16 +273,37 @@ document.querySelectorAll('.x-upload').forEach(function (box) {
   }, true);   // Capture: das Theme-Skript stoppt Klicks auf #-Links
 })();
 
-/* Vorschau: Formulare senden noch nicht, statt Fehlermeldung ein klarer Hinweis */
-document.addEventListener('submit', function (e) {
+/* Vorschau: Formulare senden noch nicht, statt Fehlermeldung ein klarer Hinweis.
+   Capture auf window: läuft vor dem Forminator-Skript, damit nichts an das alte WordPress geht.
+   Beim Livegang gehen alle Formulare an info@erdel-metallbau.de. */
+window.addEventListener('submit', function (e) {
   var f = e.target;
   if (!f.matches || !f.matches('[data-nxm-preview]') || e.defaultPrevented) return;
-  e.preventDefault();
+  e.preventDefault(); e.stopImmediatePropagation();
   if (!f.reportValidity()) return;
   var msg = f.querySelector('.forminator-response-message');
   if (msg) {
-    msg.hidden = false; msg.classList.add('is-ok');
-    msg.textContent = 'Danke! In dieser Vorschau wird noch nichts versendet. Nach dem Livegang landet deine Bewerbung direkt bei erdel metallbau.';
+    msg.hidden = false; msg.classList.add('is-ok'); msg.removeAttribute('aria-hidden');
+    msg.setAttribute('role', 'status');
+    msg.textContent = f.id === 'nxm-bewerbung'
+      ? 'Danke! In dieser Vorschau wird noch nichts versendet. Nach dem Livegang landet deine Bewerbung direkt bei info@erdel-metallbau.de.'
+      : 'Danke! In dieser Vorschau wird noch nichts versendet. Nach dem Livegang landet Ihre Anfrage direkt bei info@erdel-metallbau.de.';
     msg.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
-});
+}, true);
+
+/* Kontakt-Leiste rechts: nach dem ersten Bildschirm einblenden, über dem Fuß ausblenden */
+(function () {
+  var dock = document.querySelector('.nxm-dock');
+  if (!dock) return;
+  var root = document.documentElement, foot = document.querySelector('.nxm-foot'), footIn = false, tick = false;
+  function upd() {
+    root.classList.toggle('nxm-dock-on', window.scrollY > window.innerHeight * 0.6 && !footIn);
+    tick = false;
+  }
+  if (foot && 'IntersectionObserver' in window) {
+    new IntersectionObserver(function (e) { footIn = e[0].isIntersecting; upd(); }).observe(foot);
+  }
+  window.addEventListener('scroll', function () { if (!tick) { tick = true; requestAnimationFrame(upd); } }, { passive: true });
+  upd();
+})();

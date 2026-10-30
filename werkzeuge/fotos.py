@@ -28,6 +28,9 @@ NEU = {
     "IMG_1081.jpeg": "treppe-glas-2",
 }
 
+# Ausschnitt vor dem Verkleinern: Original -> (x0, y0, x1, y1) als Anteil (Kundenwunsch 30.10.2026: ohne Vorhänge)
+CROP = {"IMG_6800.jpg": (0, 0.10, 1, 0.56)}
+
 # Kopfbilder im Querformat aus den Originalen (volle Schärfe): Original -> (Datei, Fokus y von 0 bis 1)
 HERO = {"ULIP0355.jpg": ("hero-treppe", 0.62), "Innengeländer 5.jpg": ("hero-treppenauge", 0.5)}
 
@@ -77,6 +80,10 @@ if len(sys.argv) > 1:
     src = sys.argv[1]
     for name, slug in NEU.items():
         im = ImageOps.exif_transpose(Image.open(os.path.join(src, name))).convert("RGB")
+        if name in CROP:
+            w, h = im.size
+            x0, y0, x1, y1 = CROP[name]
+            im = im.crop((round(x0 * w), round(y0 * h), round(x1 * w), round(y1 * h)))
         im.thumbnail((2000, 2000), Image.LANCZOS)
         rel = f"nxm/img/{slug}.jpg"
         if rel in BLUR:

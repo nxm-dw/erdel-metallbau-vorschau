@@ -37,7 +37,7 @@ GALERIE = [
     ("zaun-stab", "Stabzaun in Anthrazit entlang eines Weges", (0.35, 0.5)),
     ("garagentor-verkleidet", "Garagentor mit flächenbündiger Verkleidung", (0.45, 0.5)),
     ("fassade-bronze", "Fassadenverkleidung aus bronzefarbenen Lamellen", (0.75, 0.5)),
-    ("balkon-altbau", "Stahlbalkon mit Außentreppe an einer Altbauvilla", (0.5, 0.5)),
+    ("balkon-altbau", "Stahlbalkon mit Glasvordach an einer Altbauvilla", (0.3, 0.5)),
     ("regal-showroom", "Regalsystem aus Stahl im Showroom", (0.5, 0.5)),
     ("pforte-anthrazit", "Pforte mit Sprechanlage, Anthrazit", (0.55, 0.5)),
     ("sichtschutz-schraenke", "Sichtschutzwand mit integrierten Schränken", (0.7, 0.5)),

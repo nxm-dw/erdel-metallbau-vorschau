@@ -41,8 +41,8 @@ for rel, pairs in SWAP.items():
 
 
 def startseite(t):
-    # Historie-Teaser: eigene Sonderkonstruktion (Weltkugel) statt Stockfoto
-    t = re.sub(r'(<a href="historie/">\s*<img[^>]*src=")[^"]+(")', r"\1nxm/img/weltkugel.jpg\2", t, count=1)
+    # Historie-Teaser: Altbauvilla mit Stahlbalkon (Kundenwunsch 30.10.2026, vorher Weltkugel)
+    t = re.sub(r'(<a href="historie/">\s*<img[^>]*src=")[^"]+(")', r"\1nxm/img/balkon-altbau.jpg\2", t, count=1)
     # Linktext rechts neben dem Bild wie im Entwurf: „+ mehr“
     t = re.sub(r'(<a class="mt-4 more-item" href="[^"]+">)\s*<i class="icon-arrow-right2"></i>\s*([^<]+?)(\s*</a>)',
                r'\1<span aria-hidden="true">+</span> mehr<span class="visually-hidden"> zu \2</span>\3', t)

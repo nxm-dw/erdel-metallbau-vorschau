@@ -13,7 +13,7 @@ MENU = [
     ("Referenzen", "referenzen/", "nxm/img/zaun-lamellen.jpg"),
     ("Leistungen", "leistungen/", "nxm/img/tor-anthrazit.jpg"),
     ("Hörmann", "hoermann/", U + "2022/10/garagentor-garage-metallbau-erdel-hoermann.jpg"),
-    ("Historie", "historie/", "nxm/img/weltkugel.jpg"),
+    ("Historie", "historie/", "nxm/img/balkon-altbau.jpg"),
     ("Jobs", "jobs/", U + "2022/09/erdel-metallbau-background-mitarbeiter.jpg"),
     ("Kontakt", "kontakt/", "nxm/img/haus-terrasse.jpg"),
 ]
