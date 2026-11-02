@@ -9,7 +9,7 @@ Upload danach per lftp, siehe README „Livegang“."""
 import os, re, shutil, subprocess, sys, datetime
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-DOMAIN = "https://www.erdel-metallbau.de"
+DOMAIN = "https://erdel-metallbau.de"
 WEITERLEITUNG = ("kalkulator-job1", "bewerbungsformular")
 
 if len(sys.argv) < 2:
