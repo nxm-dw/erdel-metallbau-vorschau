@@ -55,6 +55,6 @@ Balkonfoto Altbauvilla (`balkon-altbau.jpg`) ist oberhalb der Vorhänge zugeschn
 
 ## Hinweis Livegang
 Kein WordPress (Entscheidung 30.10.2026). Die Seite liegt statisch auf dem IONOS-Webspace im Ordner `/NXM_2026` (seit 02.11.2026), die Domain zeigt darauf.
-Aktualisieren: `python3 werkzeuge/live_build.py /tmp/erdel-live` (ohne noindex, mit `.htaccess`, `sitemap.xml`, `anfrage-config.php`), dann per SFTP nach `/NXM_2026` spiegeln.
+Aktualisieren: `python3 werkzeuge/live_build.py /tmp/erdel-live` (ohne noindex, mit `.htaccess`, `sitemap.xml`, `anfrage-config.php`), dann per SFTP spiegeln (der Zugang startet direkt in `/NXM_2026`, Ziel also `/`).
 Zugangsdaten: OneDrive `_Claude/01_kunden/erdel-metallbau/09_notes/NXM_erdel-metallbau_Zugangsdaten-SFTP.md` (nicht ins Repo).
 `/kalkulator-job1/` und `/bewerbungsformular/` leitet die `.htaccess` aus `live_build.py` per 301 auf `/jobs/#stelle-metallbauer` bzw. `/jobs/#bewerben` um.
