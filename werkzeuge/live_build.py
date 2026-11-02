@@ -55,6 +55,10 @@ DirectoryIndex index.html index.php
 </Files>
 
 RewriteEngine On
+# immer https und ohne www
+RewriteCond %{HTTPS} off [OR]
+RewriteCond %{HTTP_HOST} ^www\. [NC]
+RewriteRule ^ https://erdel-metallbau.de%{REQUEST_URI} [R=301,L]
 RewriteRule ^kalkulator-job1/?$ /jobs/#stelle-metallbauer [R=301,NE,L]
 RewriteRule ^bewerbungsformular/?$ /jobs/#bewerben [R=301,NE,L]
 
