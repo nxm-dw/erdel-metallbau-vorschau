@@ -54,5 +54,7 @@ gehen über `anfrage.php` per E-Mail an **info@erdel-metallbau.de**, Anhänge (J
 Balkonfoto Altbauvilla (`balkon-altbau.jpg`) ist oberhalb der Vorhänge zugeschnitten (`CROP` in `fotos.py`); eine echte Retusche mit Vorhängen weg steht aus.
 
 ## Hinweis Livegang
-Kein WordPress (Entscheidung 30.10.2026). Die Seite geht statisch auf den IONOS-Webspace, Formulare siehe oben.
-`/kalkulator-job1/` und `/bewerbungsformular/` per `.htaccess` 301 auf `/jobs/#stelle-metallbauer` bzw. `/jobs/#bewerben` umleiten.
+Kein WordPress (Entscheidung 30.10.2026). Die Seite liegt statisch auf dem IONOS-Webspace im Ordner `/NXM_2026` (seit 02.11.2026), die Domain zeigt darauf.
+Aktualisieren: `python3 werkzeuge/live_build.py /tmp/erdel-live` (ohne noindex, mit `.htaccess`, `sitemap.xml`, `anfrage-config.php`), dann per SFTP nach `/NXM_2026` spiegeln.
+Zugangsdaten: OneDrive `_Claude/01_kunden/erdel-metallbau/09_notes/NXM_erdel-metallbau_Zugangsdaten-SFTP.md` (nicht ins Repo).
+`/kalkulator-job1/` und `/bewerbungsformular/` leitet die `.htaccess` aus `live_build.py` per 301 auf `/jobs/#stelle-metallbauer` bzw. `/jobs/#bewerben` um.
